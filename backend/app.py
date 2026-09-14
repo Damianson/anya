@@ -4,6 +4,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 from models import db
+from routes import api_bp
 
 # Load environment variables from .env if present
 load_dotenv()
@@ -33,7 +34,8 @@ def create_app(test_config=None):
     CORS(app)
     db.init_app(app)
 
-    # Note: No API routes are defined for Day 1 as per requirements.
+    # Register API routes Blueprint
+    app.register_blueprint(api_bp)
 
     return app
 
