@@ -21,9 +21,16 @@ def create_app(test_config=None):
 
     # Default configuration
     default_db_path = os.path.join(app.instance_path, 'anya.db')
+    db_uri = os.environ.get('DATABASE_URL')
+    if not db_uri:
+        db_uri = f"sqlite:///{default_db_path}"
+    elif db_uri.startswith('sqlite:///instance/'):
+        db_filename = db_uri.replace('sqlite:///instance/', '')
+        db_uri = f"sqlite:///{os.path.join(app.instance_path, db_filename)}"
+
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production'),
-        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', f"sqlite:///{default_db_path}"),
+        SQLALCHEMY_DATABASE_URI=db_uri,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
