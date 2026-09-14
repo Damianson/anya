@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
 from models import db, Incident, Report, Task
-from ai_service import analyze_report
+from ai_service import analyze_report, generate_suggested_task
 
 api_bp = Blueprint('api', __name__)
 
@@ -122,10 +122,16 @@ def create_report():
 @api_bp.route('/incidents', methods=['GET'])
 def list_incidents():
     """
-    List all incidents, ordered from newest to oldest.
+    List all incidents, ordered from newest to oldest, including their tasks and report count.
     """
     incidents = Incident.query.order_by(Incident.created_at.desc()).all()
-    return jsonify([incident.to_dict() for incident in incidents]), 200
+    results = []
+    for inc in incidents:
+        data = inc.to_dict()
+        data['tasks'] = [t.to_dict() for t in inc.tasks]
+        data['report_count'] = len(inc.reports)
+        results.append(data)
+    return jsonify(results), 200
 
 
 @api_bp.route('/incidents/<int:id>', methods=['GET'])
@@ -141,3 +147,83 @@ def get_incident(id):
     incident_data['reports'] = [r.to_dict() for r in incident.reports]
     incident_data['tasks'] = [t.to_dict() for t in incident.tasks]
     return jsonify(incident_data), 200
+
+
+@api_bp.route('/incidents/<int:id>/verify', methods=['POST'])
+def verify_incident(id):
+    """
+    Human first responder action: Authoritatively mark an incident as verified.
+    """
+    incident = db.session.get(Incident, id)
+    if not incident:
+        return jsonify({'error': f'Incident {id} not found'}), 404
+
+    incident.verification_state = 'verified'
+    incident.updated_at = datetime.now(timezone.utc)
+    db.session.commit()
+
+    incident_data = incident.to_dict()
+    incident_data['reports'] = [r.to_dict() for r in incident.reports]
+    incident_data['tasks'] = [t.to_dict() for t in incident.tasks]
+    return jsonify(incident_data), 200
+
+
+@api_bp.route('/incidents/<int:id>/dispute', methods=['POST'])
+def dispute_incident(id):
+    """
+    Human first responder action: Authoritatively mark an incident as disputed.
+    """
+    incident = db.session.get(Incident, id)
+    if not incident:
+        return jsonify({'error': f'Incident {id} not found'}), 404
+
+    incident.verification_state = 'disputed'
+    incident.updated_at = datetime.now(timezone.utc)
+    db.session.commit()
+
+    incident_data = incident.to_dict()
+    incident_data['reports'] = [r.to_dict() for r in incident.reports]
+    incident_data['tasks'] = [t.to_dict() for t in incident.tasks]
+    return jsonify(incident_data), 200
+
+
+@api_bp.route('/incidents/<int:id>/tasks/generate', methods=['POST'])
+def generate_task_for_incident(id):
+    """
+    AI-assisted action: Suggests and creates an actionable task for a verified incident.
+    """
+    incident = db.session.get(Incident, id)
+    if not incident:
+        return jsonify({'error': f'Incident {id} not found'}), 404
+
+    task_desc = generate_suggested_task(incident.to_dict())
+
+    task = Task(
+        incident_id=id,
+        description=task_desc,
+        status='open'
+    )
+    db.session.add(task)
+    db.session.commit()
+
+    return jsonify(task.to_dict()), 201
+
+
+@api_bp.route('/tasks/<int:id>/claim', methods=['POST'])
+def claim_task(id):
+    """
+    Human responder action: Claim an open task to execute.
+    """
+    task = db.session.get(Task, id)
+    if not task:
+        return jsonify({'error': f'Task {id} not found'}), 404
+
+    data = request.get_json(silent=True) or {}
+    claimed_by = data.get('claimed_by', 'First Responder')
+
+    task.status = 'claimed'
+    task.claimed_by = claimed_by
+    db.session.commit()
+
+    return jsonify(task.to_dict()), 200
+

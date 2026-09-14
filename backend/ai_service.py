@@ -156,3 +156,56 @@ Output structured JSON matching the requested schema."""
     except Exception as e:
         logger.error(f"Gemini API call failed: {e}")
         return _get_fallback_result(raw_text, f"API Exception: {str(e)}")
+
+
+def generate_suggested_task(incident_data: dict) -> str:
+    """
+    Suggests a concise, actionable emergency response task for a verified incident.
+    Falls back to a deterministic task description if AI is unavailable.
+    """
+    title = incident_data.get('title', 'Emergency Incident')
+    inc_type = incident_data.get('type', 'general')
+    location = incident_data.get('location_text', 'the reported area')
+    urgency = incident_data.get('urgency', 'medium')
+    affected = incident_data.get('people_affected_estimate')
+
+    fallback_task = f"Deploy {inc_type} response team to {location}"
+
+    api_key = os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_API_KEY')
+    if not api_key:
+        return fallback_task
+
+    prompt = f"""You are Anya, an emergency dispatch assistant.
+Given this verified crisis incident:
+- Title: {title}
+- Incident Type: {inc_type}
+- Location: {location}
+- Urgency: {urgency}
+- People Affected: {affected if affected is not None else 'Unknown'}
+
+Suggest ONE single, highly specific, actionable operational task for emergency responders or volunteers to execute immediately (under 80 characters, no quotes or prefix).
+Examples:
+- "Deploy 2 inflatable rescue boats to Elm St for evacuation"
+- "Set up emergency water distribution point at Central High School"
+- "Cordon off downed high-voltage lines at 5th and Main"
+"""
+    model_name = os.environ.get('GEMINI_MODEL', 'gemini-3.6-flash')
+    try:
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.2,
+                max_output_tokens=50,
+            )
+        )
+        if response.text:
+            task_text = response.text.strip().strip('"').strip("'")
+            if task_text:
+                return task_text
+    except Exception as e:
+        logger.warning(f"Task generation LLM call failed: {e}")
+
+    return fallback_task
+

@@ -116,3 +116,4 @@ export default function IncidentDetail({ incidentId, onClose }) {
     </section>
   );
 }
+

@@ -477,3 +477,321 @@
   border-radius: 6px;
   border: 1px solid #e2e8f0;
 }
+
+/* Responder Workspace */
+.responder-workspace {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.responder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.responder-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.refresh-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #334155;
+}
+
+.refresh-btn:hover {
+  background: #f1f5f9;
+}
+
+/* Triage Metrics */
+.triage-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .triage-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metric-box {
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-number {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.alert-box {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+}
+
+.success-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+.neutral-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+/* Responder Cards */
+.responder-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.responder-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 18px;
+  background: #ffffff;
+  transition: all 0.2s;
+}
+
+.responder-card.card-disputed {
+  border-left: 5px solid #c026d3;
+  background: #fdf4ff;
+}
+
+.responder-card.card-unverified {
+  border-left: 5px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.responder-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.card-identity {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.card-reports-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.responder-card-title {
+  margin: 0 0 10px;
+  font-size: 17px;
+  color: #0f172a;
+}
+
+.responder-card-meta {
+  font-size: 13px;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.card-timestamp {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Verification Actions */
+.verification-actions {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.action-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.action-buttons-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-action:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-verify {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.btn-dispute {
+  background: #9333ea;
+  color: #ffffff;
+}
+
+.btn-suggest-task {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-details {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+}
+
+/* Tasks Inside Incident Card */
+.incident-tasks-container {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.incident-tasks-container h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.no-tasks-text {
+  font-size: 12px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.task-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.task-status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status-open {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.status-claimed {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.task-desc {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.task-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.claimed-by-tag {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.claim-btn {
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.claim-btn:hover {
+  background: #0369a1;
+}
+

@@ -148,3 +148,4 @@ export default function ReportForm({ role, onSubmitSuccess }) {
     </section>
   );
 }
+

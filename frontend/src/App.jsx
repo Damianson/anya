@@ -3,6 +3,7 @@ import RoleToggle from './components/RoleToggle';
 import ReportForm from './components/ReportForm';
 import IncidentList from './components/IncidentList';
 import IncidentDetail from './components/IncidentDetail';
+import ResponderView from './components/ResponderView';
 import './App.css';
 
 const API_BASE = 'http://127.0.0.1:5000';
@@ -36,7 +37,6 @@ export default function App() {
   }, [fetchIncidents]);
 
   function handleReportSubmitted() {
-    // Refresh incident list when a new report is posted
     fetchIncidents();
   }
 
@@ -58,27 +58,35 @@ export default function App() {
         <RoleToggle currentRole={role} onRoleChange={setRole} />
       </header>
 
-      <main className="dashboard-grid">
-        <div className="dashboard-column form-column">
-          <ReportForm role={role} onSubmitSuccess={handleReportSubmitted} />
-        </div>
+      <main className="dashboard-main">
+        {selectedIncidentId ? (
+          <IncidentDetail
+            incidentId={selectedIncidentId}
+            onClose={handleCloseDetail}
+          />
+        ) : role === 'responder' ? (
+          <ResponderView
+            incidents={incidents}
+            onRefresh={fetchIncidents}
+            onSelectIncident={handleSelectIncident}
+          />
+        ) : (
+          <div className="dashboard-grid">
+            <div className="dashboard-column form-column">
+              <ReportForm role={role} onSubmitSuccess={handleReportSubmitted} />
+            </div>
 
-        <div className="dashboard-column feed-column">
-          {selectedIncidentId ? (
-            <IncidentDetail
-              incidentId={selectedIncidentId}
-              onClose={handleCloseDetail}
-            />
-          ) : (
-            <IncidentList
-              incidents={incidents}
-              loading={loading}
-              error={error}
-              selectedIncidentId={selectedIncidentId}
-              onSelectIncident={handleSelectIncident}
-            />
-          )}
-        </div>
+            <div className="dashboard-column feed-column">
+              <IncidentList
+                incidents={incidents}
+                loading={loading}
+                error={error}
+                selectedIncidentId={selectedIncidentId}
+                onSelectIncident={handleSelectIncident}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
