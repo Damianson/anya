@@ -198,3 +198,4 @@ export default function SmsSimulator({ isOpen, onClose, onReportDelivered, t = (
     </div>
   );
 }
+
