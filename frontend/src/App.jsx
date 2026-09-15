@@ -4,6 +4,7 @@ import ReportForm from './components/ReportForm';
 import IncidentList from './components/IncidentList';
 import IncidentDetail from './components/IncidentDetail';
 import ResponderView from './components/ResponderView';
+import SmsSimulator from './components/SmsSimulator';
 import { TRANSLATIONS } from './translations';
 import './App.css';
 
@@ -16,6 +17,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIncidentId, setSelectedIncidentId] = useState(null);
+  const [smsSimulatorOpen, setSmsSimulatorOpen] = useState(false);
 
   // Translation lookup helper
   const t = useCallback(
@@ -89,6 +91,15 @@ export default function App() {
           </div>
 
           <RoleToggle currentRole={role} onRoleChange={setRole} t={t} />
+
+          <button
+            type="button"
+            className="sms-sim-btn"
+            onClick={() => setSmsSimulatorOpen(true)}
+            title="Simulate low-bandwidth 2G SMS emergency reporting"
+          >
+            {t('btn_sms_simulator')}
+          </button>
         </div>
       </header>
 
@@ -125,6 +136,13 @@ export default function App() {
           </div>
         )}
       </main>
+
+      <SmsSimulator
+        isOpen={smsSimulatorOpen}
+        onClose={() => setSmsSimulatorOpen(false)}
+        onReportDelivered={fetchIncidents}
+        t={t}
+      />
     </div>
   );
 }

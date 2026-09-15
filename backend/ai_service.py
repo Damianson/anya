@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import logging
 from typing import Optional, Literal
 from dotenv import load_dotenv
@@ -136,38 +137,46 @@ TASK REQUIREMENTS:
 Output structured JSON matching the requested schema."""
 
     model_name = os.environ.get('GEMINI_MODEL', 'gemini-3.6-flash')
+    max_attempts = 3
 
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=model_name,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_json_schema=ReportAnalysisResult.model_json_schema(),
-                temperature=0.1,
+    for attempt in range(max_attempts):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_json_schema=ReportAnalysisResult.model_json_schema(),
+                    temperature=0.1,
+                )
             )
-        )
 
-        if not response.text:
-            logger.warning("Empty response received from Gemini API.")
-            return _get_fallback_result(raw_text, "Empty LLM response")
+            if not response.text:
+                logger.warning("Empty response received from Gemini API.")
+                return _get_fallback_result(raw_text, "Empty LLM response")
 
-        # Parse and validate with Pydantic
-        parsed_json = json.loads(response.text)
-        validated = ReportAnalysisResult.model_validate(parsed_json)
-        
-        return {
-            'status': 'success',
-            'data': validated.model_dump()
-        }
+            # Parse and validate with Pydantic
+            parsed_json = json.loads(response.text)
+            validated = ReportAnalysisResult.model_validate(parsed_json)
+            
+            return {
+                'status': 'success',
+                'data': validated.model_dump()
+            }
 
-    except ValidationError as ve:
-        logger.error(f"Gemini response validation error: {ve}")
-        return _get_fallback_result(raw_text, f"Pydantic validation error: {str(ve)}")
-    except Exception as e:
-        logger.error(f"Gemini API call failed: {e}")
-        return _get_fallback_result(raw_text, f"API Exception: {str(e)}")
+        except ValidationError as ve:
+            logger.error(f"Gemini response validation error: {ve}")
+            return _get_fallback_result(raw_text, f"Pydantic validation error: {str(ve)}")
+        except Exception as e:
+            err_msg = str(e)
+            if attempt < max_attempts - 1 and ("503" in err_msg or "429" in err_msg or "UNAVAILABLE" in err_msg):
+                wait_secs = 2 * (attempt + 1)
+                logger.warning(f"Transient Gemini API error ({err_msg}). Retrying in {wait_secs}s...")
+                time.sleep(wait_secs)
+                continue
+            logger.error(f"Gemini API call failed: {e}")
+            return _get_fallback_result(raw_text, f"API Exception: {err_msg}")
 
 
 def generate_suggested_task(incident_data: dict) -> str:

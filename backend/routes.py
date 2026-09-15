@@ -5,6 +5,39 @@ from ai_service import analyze_report, generate_suggested_task
 
 api_bp = Blueprint('api', __name__)
 
+def _mask_phone_number(phone: str) -> str:
+    """Mask phone number for citizen privacy protection (OSF human rights standard)."""
+    if not phone:
+        return "sms:unknown"
+    clean = str(phone).strip()
+    if len(clean) >= 8:
+        return f"sms:{clean[:7]}***{clean[-4:]}"
+    return f"sms:{clean}"
+
+
+def _check_auto_escalation(incident: Incident) -> bool:
+    """
+    Auto-escalate urgency based on community corroboration volume:
+    - 3+ linked reports: automatically escalate to 'critical'
+    - 2+ linked reports: automatically escalate 'low' to 'medium'
+    Returns True if urgency was escalated.
+    """
+    report_count = len(incident.reports)
+    escalated = False
+    if report_count >= 3:
+        if incident.urgency != 'critical':
+            incident.urgency = 'critical'
+            escalated = True
+    elif report_count >= 2:
+        if incident.urgency == 'low':
+            incident.urgency = 'medium'
+            escalated = True
+
+    if escalated:
+        incident.updated_at = datetime.now(timezone.utc)
+    return escalated
+
+
 @api_bp.route('/reports', methods=['POST'])
 def create_report():
     """
@@ -96,6 +129,9 @@ def create_report():
         ai_confidence=ai_data.get('confidence_score')
     )
     db.session.add(report)
+
+    # Check and apply urgency auto-escalation
+    _check_auto_escalation(target_incident)
     db.session.commit()
 
     response_payload = {
@@ -254,4 +290,127 @@ def claim_task(id):
     db.session.commit()
 
     return jsonify(task.to_dict()), 200
+
+
+@api_bp.route('/webhooks/sms', methods=['POST'])
+def sms_webhook():
+    """
+    Low-bandwidth 2G SMS Ingestion Webhook.
+    Accepts standard African / International SMS gateway formats:
+    - Africa's Talking / Twilio: 'from' (or 'From') and 'text' (or 'body' or 'Body').
+    Supports application/json and application/x-www-form-urlencoded.
+    """
+    data = {}
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+    else:
+        data = request.form.to_dict() if request.form else {}
+
+    raw_phone = data.get('from') or data.get('From') or data.get('phone') or data.get('sender') or '+2348000000000'
+    raw_text = data.get('text') or data.get('body') or data.get('Body') or data.get('message')
+
+    if not raw_text or not isinstance(raw_text, str) or not raw_text.strip():
+        return jsonify({
+            'error': 'Missing required SMS body',
+            'reply_sms': 'Anya Error: Empty SMS received. Please describe the crisis situation.'
+        }), 400
+
+    masked_sender = _mask_phone_number(raw_phone)
+
+    # Query recent active incidents
+    recent_incidents = Incident.query.order_by(Incident.created_at.desc()).limit(15).all()
+    incidents_payload = [inc.to_dict() for inc in recent_incidents]
+
+    # Single Gemini LLM call
+    ai_result = analyze_report(
+        raw_text=raw_text.strip(),
+        reporter_label=masked_sender,
+        active_incidents=incidents_payload
+    )
+    ai_data = ai_result['data']
+
+    target_incident = None
+    incident_id = None
+
+    # Handle Matching vs New
+    if ai_data.get('match_decision') == 'MATCH' and ai_data.get('matched_incident_id'):
+        matched_id = ai_data['matched_incident_id']
+        matched_incident = db.session.get(Incident, matched_id)
+        if matched_incident:
+            target_incident = matched_incident
+            incident_id = matched_incident.id
+            if ai_data.get('has_contradiction'):
+                target_incident.verification_state = 'disputed'
+            elif target_incident.verification_state == 'unverified':
+                target_incident.verification_state = 'corroborated'
+            
+            if ai_data.get('people_affected_estimate') and not target_incident.people_affected_estimate:
+                target_incident.people_affected_estimate = ai_data['people_affected_estimate']
+            
+            target_incident.updated_at = datetime.now(timezone.utc)
+
+    if not target_incident:
+        clean_text = raw_text.strip()
+        first_line = clean_text.split('\n')[0]
+        fallback_title = first_line[:57] + '...' if len(first_line) > 60 else first_line
+        title = ai_data.get('suggested_title') or fallback_title or 'SMS Crisis Report'
+
+        target_incident = Incident(
+            title=title,
+            type=ai_data.get('incident_type', 'general'),
+            location_text=ai_data.get('location', 'Unknown'),
+            urgency=ai_data.get('urgency', 'medium'),
+            verification_state='unverified',
+            people_affected_estimate=ai_data.get('people_affected_estimate')
+        )
+        db.session.add(target_incident)
+        db.session.flush()
+        incident_id = target_incident.id
+
+    report = Report(
+        incident_id=incident_id,
+        raw_text=raw_text.strip(),
+        reporter_label=masked_sender,
+        ai_reasoning=ai_data.get('reasoning_snippet'),
+        ai_confidence=ai_data.get('confidence_score')
+    )
+    db.session.add(report)
+
+    # Urgency auto-escalation check
+    escalated = _check_auto_escalation(target_incident)
+    db.session.commit()
+
+    # Generate 2G SMS automated return reply to citizen's feature phone
+    if ai_data.get('match_decision') == 'MATCH':
+        reply_sms = (
+            f"Anya Alert: Report logged under Incident #{target_incident.id} ({target_incident.title[:30]}...). "
+            f"Urgency: {target_incident.urgency.upper()}{' (AUTO-ESCALATED)' if escalated else ''}. "
+            f"First responders notified."
+        )
+    else:
+        reply_sms = (
+            f"Anya Alert: New Incident #{target_incident.id} opened for {target_incident.location_text}. "
+            f"Urgency: {target_incident.urgency.upper()}. "
+            f"Triage team dispatched."
+        )
+
+    response_payload = {
+        'status': 'delivered',
+        'reply_sms': reply_sms,
+        'report': report.to_dict(),
+        'incident': target_incident.to_dict(),
+        'auto_escalated': escalated,
+        'ai': {
+            'status': ai_result.get('status'),
+            'match_decision': ai_data.get('match_decision'),
+            'matched_incident_id': ai_data.get('matched_incident_id'),
+            'has_contradiction': ai_data.get('has_contradiction'),
+            'contradiction_reason': ai_data.get('contradiction_reason'),
+            'confidence_score': ai_data.get('confidence_score'),
+            'reasoning_snippet': ai_data.get('reasoning_snippet')
+        }
+    }
+
+    return jsonify(response_payload), 201
+
 

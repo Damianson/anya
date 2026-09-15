@@ -34,6 +34,19 @@ export const TRANSLATIONS = {
     ai_rationale_label: "AI Triage Rationale",
     ai_confidence: "confidence",
 
+    // Low-Bandwidth SMS Simulator
+    btn_sms_simulator: "📱 2G SMS Ingest Simulator",
+    sms_modal_title: "Low-Bandwidth SMS Ingestion Gateway (2G / Feature Phone)",
+    sms_modal_sub: "Simulates incoming citizen SMS from areas where cellular internet is down. Messages are automatically anonymized and triaged.",
+    sms_sender_label: "Citizen Phone Number:",
+    sms_message_label: "Inbound SMS Message:",
+    sms_quick_scenarios: "Quick Crisis Scenarios (Nigeria):",
+    sms_btn_send: "Send Inbound SMS",
+    sms_btn_sending: "Transmitting 2G SMS...",
+    sms_reply_label: "Simulated Citizen Handset (SMS Reply Received):",
+    sms_auto_escalated: "Auto-Escalated to Critical (High Volume)",
+    sms_badge_2g: "2G SMS Ingestion",
+
     // Incident List
     list_heading: "Active Incidents",
     btn_view_list: "List View",
@@ -115,6 +128,19 @@ export const TRANSLATIONS = {
     conflict_detected: "Gbege / Contradiction Dey:",
     ai_rationale_label: "Why AI Reason Am",
     ai_confidence: "sureness",
+
+    // Low-Bandwidth SMS Simulator
+    btn_sms_simulator: "📱 SMS Wey No Need Internet",
+    sms_modal_title: "Channel Wey Dey Receive SMS (2G / Small Phone)",
+    sms_modal_sub: "Dey collect SMS from area where internet don cut. System dey hide phone number make citizen safe.",
+    sms_sender_label: "Phone Number Wey Send Am:",
+    sms_message_label: "SMS Wey Enter:",
+    sms_quick_scenarios: "Quick Story (Naija Crisis):",
+    sms_btn_send: "Send Inbound SMS",
+    sms_btn_sending: "SMS Dey Enter Network...",
+    sms_reply_label: "Phone Wey Receive Reply:",
+    sms_auto_escalated: "Urgency Don High to Critical!",
+    sms_badge_2g: "2G SMS Channel",
 
     // Incident List
     list_heading: "Wahala / Incidents Wey Dey Ground",
