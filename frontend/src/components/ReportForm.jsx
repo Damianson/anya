@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const API_BASE = 'http://127.0.0.1:5000';
 
-export default function ReportForm({ role, onSubmitSuccess }) {
+export default function ReportForm({ role, onSubmitSuccess, t = (k) => k }) {
   const [rawText, setRawText] = useState('');
   const [locationText, setLocationText] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -45,7 +45,7 @@ export default function ReportForm({ role, onSubmitSuccess }) {
 
       // Success
       setFeedback({
-        message: 'Report submitted successfully!',
+        message: t('alert_success') || 'Report submitted successfully!',
         incident: data.incident,
         ai: data.ai,
       });
@@ -67,11 +67,13 @@ export default function ReportForm({ role, onSubmitSuccess }) {
     }
   }
 
+  const roleDisplay = role === 'responder' ? (t('role_responder') || 'First Responder') : (t('role_resident') || 'Resident');
+
   return (
     <section className="form-card">
-      <h2>Submit Crisis Report</h2>
+      <h2>{t('form_title')}</h2>
       <p className="form-subtitle">
-        Reporting as: <strong>{role === 'responder' ? 'First Responder' : 'Resident'}</strong>
+        {t('form_subtitle')} <strong>{roleDisplay}</strong>
       </p>
 
       {error && <div className="alert alert-error">{error}</div>}
@@ -82,18 +84,18 @@ export default function ReportForm({ role, onSubmitSuccess }) {
           {feedback.ai && (
             <div className="ai-feedback-box">
               <p>
-                <strong>AI Decision:</strong>{' '}
+                <strong>{t('ai_decision_label')}</strong>{' '}
                 {feedback.ai.match_decision === 'MATCH' ? (
                   <span className="badge badge-match">
-                    Matched Incident #{feedback.ai.matched_incident_id}
+                    {t('badge_matched')} {feedback.ai.matched_incident_id}
                   </span>
                 ) : (
-                  <span className="badge badge-new">New Incident Created</span>
+                  <span className="badge badge-new">{t('badge_new')}</span>
                 )}
               </p>
               {feedback.ai.has_contradiction && (
                 <p className="conflict-alert">
-                  <strong>Conflict Detected:</strong> {feedback.ai.contradiction_reason}
+                  <strong>{t('conflict_detected')}</strong> {feedback.ai.contradiction_reason}
                 </p>
               )}
             </div>
@@ -104,12 +106,12 @@ export default function ReportForm({ role, onSubmitSuccess }) {
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="rawText">
-            Report Description <span className="required">*</span>
+            {t('field_desc')} <span className="required">*</span>
           </label>
           <textarea
             id="rawText"
             rows="4"
-            placeholder="Describe the situation, hazards, or immediate needs..."
+            placeholder={t('field_desc_placeholder')}
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
             disabled={submitting}
@@ -118,11 +120,11 @@ export default function ReportForm({ role, onSubmitSuccess }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="locationText">Location / Landmark (optional)</label>
+          <label htmlFor="locationText">{t('field_location')}</label>
           <input
             id="locationText"
             type="text"
-            placeholder="e.g. Elm St and 4th Ave"
+            placeholder={t('field_location_placeholder')}
             value={locationText}
             onChange={(e) => setLocationText(e.target.value)}
             disabled={submitting}
@@ -130,11 +132,11 @@ export default function ReportForm({ role, onSubmitSuccess }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="imageUrl">Image URL (optional)</label>
+          <label htmlFor="imageUrl">{t('field_image')}</label>
           <input
             id="imageUrl"
             type="url"
-            placeholder="https://example.com/photo.jpg"
+            placeholder={t('field_image_placeholder')}
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             disabled={submitting}
@@ -142,10 +144,9 @@ export default function ReportForm({ role, onSubmitSuccess }) {
         </div>
 
         <button type="submit" className="submit-btn" disabled={submitting}>
-          {submitting ? 'Analyzing & Submitting...' : 'Submit Report'}
+          {submitting ? t('btn_submitting') : t('btn_submit')}
         </button>
       </form>
     </section>
   );
 }
-

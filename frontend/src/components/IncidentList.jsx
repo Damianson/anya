@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import MapView from './MapView';
 
 export default function IncidentList({
   incidents,
@@ -6,7 +7,10 @@ export default function IncidentList({
   error,
   selectedIncidentId,
   onSelectIncident,
+  t = (k) => k,
 }) {
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'map'
+
   if (loading) {
     return <div className="list-card"><p>Loading incidents...</p></div>;
   }
@@ -22,15 +26,40 @@ export default function IncidentList({
   return (
     <section className="list-card">
       <div className="list-header">
-        <h2>Active Incidents ({incidents.length})</h2>
+        <h2>{t('list_heading')} ({incidents.length})</h2>
+        <div className="view-mode-toggle">
+          <button
+            type="button"
+            className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+            onClick={() => setViewMode('list')}
+          >
+            📋 {t('btn_view_list')}
+          </button>
+          <button
+            type="button"
+            className={`view-toggle-btn ${viewMode === 'map' ? 'active' : ''}`}
+            onClick={() => setViewMode('map')}
+          >
+            🗺️ {t('btn_view_map')}
+          </button>
+        </div>
       </div>
 
-      {incidents.length === 0 ? (
-        <p className="empty-state">No incidents recorded yet. Submit a report to begin.</p>
+      {viewMode === 'map' ? (
+        <MapView
+          incidents={incidents}
+          onSelectIncident={onSelectIncident}
+          t={t}
+        />
+      ) : incidents.length === 0 ? (
+        <p className="empty-state">{t('empty_incidents')}</p>
       ) : (
         <div className="incidents-grid">
           {incidents.map((incident) => {
             const isSelected = selectedIncidentId === incident.id;
+            const urgencyKey = `urgency_${incident.urgency}`;
+            const stateKey = `state_${incident.verification_state}`;
+
             return (
               <div
                 key={incident.id}
@@ -40,20 +69,20 @@ export default function IncidentList({
                 <div className="incident-top">
                   <span className="incident-id">#{incident.id}</span>
                   <span className={`urgency-pill urgency-${incident.urgency}`}>
-                    {incident.urgency}
+                    {t(urgencyKey) || incident.urgency}
                   </span>
                   <span className={`state-pill state-${incident.verification_state}`}>
-                    {incident.verification_state}
+                    {t(stateKey) || incident.verification_state}
                   </span>
                 </div>
 
                 <h3 className="incident-title">{incident.title}</h3>
 
                 <div className="incident-meta">
-                  <p><strong>Type:</strong> {incident.type}</p>
-                  <p><strong>Location:</strong> {incident.location_text}</p>
+                  <p><strong>{t('meta_type')}</strong> {incident.type}</p>
+                  <p><strong>{t('meta_location')}</strong> {incident.location_text}</p>
                   {incident.people_affected_estimate && (
-                    <p><strong>Affected:</strong> ~{incident.people_affected_estimate} people</p>
+                    <p><strong>{t('meta_affected')}</strong> ~{incident.people_affected_estimate} people</p>
                   )}
                   <p className="incident-time">
                     {new Date(incident.created_at).toLocaleString()}
@@ -68,7 +97,7 @@ export default function IncidentList({
                     onSelectIncident(incident.id);
                   }}
                 >
-                  {isSelected ? 'Viewing' : 'View Details'}
+                  {isSelected ? t('btn_viewing') : t('btn_view_details')}
                 </button>
               </div>
             );
@@ -78,4 +107,3 @@ export default function IncidentList({
     </section>
   );
 }
-

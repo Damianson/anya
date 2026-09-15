@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const API_BASE = 'http://127.0.0.1:5000';
 
-export default function ResponderView({ incidents, onRefresh, onSelectIncident }) {
+export default function ResponderView({ incidents, onRefresh, onSelectIncident, t = (k) => k }) {
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [actionError, setActionError] = useState(null);
 
@@ -90,43 +90,45 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
     <section className="responder-workspace">
       <div className="responder-header">
         <div>
-          <h2>Emergency Responder Triage Board</h2>
+          <h2>{t('responder_heading')}</h2>
           <p className="responder-sub">
-            Review field reports, verify or dispute crisis events, and dispatch operational tasks.
+            {t('responder_sub')}
           </p>
         </div>
         <button type="button" className="refresh-btn" onClick={onRefresh}>
-          ↻ Refresh Triage
+          {t('btn_refresh')}
         </button>
       </div>
 
       <div className="triage-metrics">
         <div className="metric-box alert-box">
           <span className="metric-number">{needsAttentionCount}</span>
-          <span className="metric-label">Needing Attention (Disputed / Unverified)</span>
+          <span className="metric-label">{t('metric_attention')}</span>
         </div>
         <div className="metric-box success-box">
           <span className="metric-number">
             {incidents.filter((i) => i.verification_state === 'verified').length}
           </span>
-          <span className="metric-label">Verified Incidents</span>
+          <span className="metric-label">{t('metric_verified')}</span>
         </div>
         <div className="metric-box neutral-box">
           <span className="metric-number">{incidents.length}</span>
-          <span className="metric-label">Total Tracked</span>
+          <span className="metric-label">{t('metric_total')}</span>
         </div>
       </div>
 
       {actionError && <div className="alert alert-error">{actionError}</div>}
 
       {sortedIncidents.length === 0 ? (
-        <div className="empty-state">No incidents currently in the database.</div>
+        <div className="empty-state">{t('empty_incidents')}</div>
       ) : (
         <div className="responder-cards">
           {sortedIncidents.map((incident) => {
             const isVerified = incident.verification_state === 'verified';
             const isDisputed = incident.verification_state === 'disputed';
             const isUnverified = incident.verification_state === 'unverified';
+            const urgencyKey = `urgency_${incident.urgency}`;
+            const stateKey = `state_${incident.verification_state}`;
 
             return (
               <div
@@ -139,10 +141,10 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
                   <div className="card-identity">
                     <span className="incident-id">#{incident.id}</span>
                     <span className={`urgency-pill urgency-${incident.urgency}`}>
-                      {incident.urgency}
+                      {t(urgencyKey) || incident.urgency}
                     </span>
                     <span className={`state-pill state-${incident.verification_state}`}>
-                      {incident.verification_state}
+                      {t(stateKey) || incident.verification_state}
                     </span>
                     <span className="type-pill">{incident.type}</span>
                   </div>
@@ -154,18 +156,18 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
                 <h3 className="responder-card-title">{incident.title}</h3>
 
                 <div className="responder-card-meta">
-                  <p><strong>Location:</strong> {incident.location_text}</p>
+                  <p><strong>{t('meta_location')}</strong> {incident.location_text}</p>
                   {incident.people_affected_estimate && (
-                    <p><strong>Estimated Affected:</strong> ~{incident.people_affected_estimate} people</p>
+                    <p><strong>{t('meta_affected')}</strong> ~{incident.people_affected_estimate} people</p>
                   )}
                   <p className="card-timestamp">
-                    Created: {new Date(incident.created_at).toLocaleTimeString()}
+                    {t('meta_created')} {new Date(incident.created_at).toLocaleTimeString()}
                   </p>
                 </div>
 
                 {/* Human Verification Actions */}
                 <div className="verification-actions">
-                  <span className="action-label">Verification Action:</span>
+                  <span className="action-label">{t('verification_action')}</span>
                   <div className="action-buttons-row">
                     <button
                       type="button"
@@ -173,7 +175,7 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
                       disabled={isVerified || actionLoadingId === `verify-${incident.id}`}
                       onClick={() => handleVerify(incident.id)}
                     >
-                      {isVerified ? '✓ Verified' : 'Mark Verified'}
+                      {isVerified ? t('btn_verified') : t('btn_verify')}
                     </button>
 
                     <button
@@ -182,7 +184,7 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
                       disabled={isDisputed || actionLoadingId === `dispute-${incident.id}`}
                       onClick={() => handleDispute(incident.id)}
                     >
-                      {isDisputed ? '⚠ Disputed' : 'Mark Disputed'}
+                      {isDisputed ? t('btn_disputed') : t('btn_dispute')}
                     </button>
 
                     <button
@@ -193,8 +195,8 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
                       title={isVerified ? 'Generate action task' : 'Recommended for verified incidents'}
                     >
                       {actionLoadingId === `task-${incident.id}`
-                        ? 'Generating...'
-                        : '+ Generate Suggested Task'}
+                        ? t('btn_generating')
+                        : t('btn_suggest_task')}
                     </button>
 
                     <button
@@ -202,16 +204,16 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
                       className="btn-action btn-details"
                       onClick={() => onSelectIncident(incident.id)}
                     >
-                      Inspect Reports
+                      {t('btn_inspect')}
                     </button>
                   </div>
                 </div>
 
                 {/* Associated Tasks Section */}
                 <div className="incident-tasks-container">
-                  <h4>Operational Tasks ({incident.tasks ? incident.tasks.length : 0})</h4>
+                  <h4>{t('tasks_heading')} ({incident.tasks ? incident.tasks.length : 0})</h4>
                   {(!incident.tasks || incident.tasks.length === 0) ? (
-                    <p className="no-tasks-text">No tasks generated yet. Click "Generate Suggested Task" to dispatch response.</p>
+                    <p className="no-tasks-text">{t('no_tasks')}</p>
                   ) : (
                     <div className="tasks-list">
                       {incident.tasks.map((task) => (
@@ -225,7 +227,7 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
 
                           <div className="task-meta-right">
                             {task.claimed_by && (
-                              <span className="claimed-by-tag">Claimed by: {task.claimed_by}</span>
+                              <span className="claimed-by-tag">{t('claimed_by_label')} {task.claimed_by}</span>
                             )}
                             {task.status === 'open' && (
                               <button
@@ -234,7 +236,7 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
                                 disabled={actionLoadingId === `claim-${task.id}`}
                                 onClick={() => handleClaimTask(task.id)}
                               >
-                                {actionLoadingId === `claim-${task.id}` ? 'Claiming...' : 'Claim Task'}
+                                {actionLoadingId === `claim-${task.id}` ? t('btn_claiming') : t('btn_claim_task')}
                               </button>
                             )}
                           </div>
@@ -251,4 +253,3 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident }
     </section>
   );
 }
-

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const API_BASE = 'http://127.0.0.1:5000';
 
-export default function IncidentDetail({ incidentId, onClose }) {
+export default function IncidentDetail({ incidentId, onClose, t = (k) => k }) {
   const [incident, setIncident] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,10 +48,10 @@ export default function IncidentDetail({ incidentId, onClose }) {
     <section className="detail-card">
       <div className="detail-header">
         <div>
-          <h2>Incident #{incidentId} Details</h2>
+          <h2>#{incidentId} {t('detail_heading')}</h2>
         </div>
         <button type="button" className="close-btn" onClick={onClose}>
-          ✕ Close
+          {t('detail_close')}
         </button>
       </div>
 
@@ -64,32 +64,32 @@ export default function IncidentDetail({ incidentId, onClose }) {
             <h3>{incident.title}</h3>
             <div className="pills-row">
               <span className={`urgency-pill urgency-${incident.urgency}`}>
-                Urgency: {incident.urgency}
+                {t(`urgency_${incident.urgency}`) || incident.urgency}
               </span>
               <span className={`state-pill state-${incident.verification_state}`}>
-                State: {incident.verification_state}
+                {t(`state_${incident.verification_state}`) || incident.verification_state}
               </span>
-              <span className="type-pill">Type: {incident.type}</span>
+              <span className="type-pill">{t('meta_type')} {incident.type}</span>
             </div>
 
-            <p><strong>Location:</strong> {incident.location_text}</p>
+            <p><strong>{t('meta_location')}</strong> {incident.location_text}</p>
             {incident.people_affected_estimate && (
-              <p><strong>Estimated People Affected:</strong> ~{incident.people_affected_estimate}</p>
+              <p><strong>{t('meta_affected')}</strong> ~{incident.people_affected_estimate}</p>
             )}
-            <p><strong>First Reported:</strong> {new Date(incident.created_at).toLocaleString()}</p>
-            <p><strong>Last Updated:</strong> {new Date(incident.updated_at).toLocaleString()}</p>
+            <p><strong>{t('detail_first_reported')}</strong> {new Date(incident.created_at).toLocaleString()}</p>
+            <p><strong>{t('detail_last_updated')}</strong> {new Date(incident.updated_at).toLocaleString()}</p>
           </div>
 
           <div className="linked-reports-section">
-            <h4>Linked Reports ({incident.reports ? incident.reports.length : 0})</h4>
+            <h4>{t('detail_linked_reports')} ({incident.reports ? incident.reports.length : 0})</h4>
             {(!incident.reports || incident.reports.length === 0) ? (
-              <p className="empty-state">No linked reports available.</p>
+              <p className="empty-state">{t('detail_no_reports')}</p>
             ) : (
               <div className="reports-list">
                 {incident.reports.map((report) => (
                   <div key={report.id} className="report-item">
                     <div className="report-item-header">
-                      <span className="reporter-tag">Report #{report.id} by {report.reporter_label}</span>
+                      <span className="reporter-tag">Report #{report.id} ({report.reporter_label})</span>
                       <span className="report-time">
                         {new Date(report.created_at).toLocaleTimeString()}
                       </span>
@@ -116,4 +116,3 @@ export default function IncidentDetail({ incidentId, onClose }) {
     </section>
   );
 }
-
