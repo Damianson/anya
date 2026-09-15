@@ -45,6 +45,13 @@ class ReportAnalysisResult(BaseModel):
         default=None,
         description="A concise single-line explanation of the contradiction if has_contradiction is true; null otherwise"
     )
+    confidence_score: float = Field(
+        default=0.85,
+        description="Confidence score between 0.0 and 1.0 representing certainty of extraction, matching, and conflict assessment."
+    )
+    reasoning_snippet: str = Field(
+        description="Concise 1-2 sentence explanation of why this report was matched to an existing incident or deemed a new incident, citing specific landmarks, keywords, or time/location overlap."
+    )
 
 
 def _get_fallback_result(raw_text: str, reason: str) -> dict:
@@ -67,7 +74,9 @@ def _get_fallback_result(raw_text: str, reason: str) -> dict:
             'match_decision': 'NEW',
             'matched_incident_id': None,
             'has_contradiction': False,
-            'contradiction_reason': None
+            'contradiction_reason': None,
+            'confidence_score': 0.5,
+            'reasoning_snippet': f"Fallback deterministic triage applied ({reason})."
         }
     }
 
@@ -120,6 +129,9 @@ TASK REQUIREMENTS:
 3. Conflict Detection:
    - If match_decision is "MATCH": Check if this report contradicts or disputes what is currently recorded for the matched incident (e.g. reporting the road is open vs collapsed, reporting a false alarm, or disputing major facts). If so, set has_contradiction: true and provide a one-line contradiction_reason. If it confirms or adds info without conflict, set has_contradiction: false and contradiction_reason: null.
    - If match_decision is "NEW": set has_contradiction: false and contradiction_reason: null.
+4. Explainability & Confidence:
+   - Provide a concise 1-2 sentence reasoning_snippet explaining why the report was matched to an existing incident or classified as a new event, explicitly citing landmarks, keywords, or contradictions.
+   - Provide a numerical confidence_score between 0.0 and 1.0 reflecting your assessment certainty.
 
 Output structured JSON matching the requested schema."""
 

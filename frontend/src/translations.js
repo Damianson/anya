@@ -31,6 +31,8 @@ export const TRANSLATIONS = {
     badge_matched: "Matched Incident #",
     badge_new: "New Incident Created",
     conflict_detected: "Conflict Detected:",
+    ai_rationale_label: "AI Triage Rationale",
+    ai_confidence: "confidence",
 
     // Incident List
     list_heading: "Active Incidents",
@@ -111,6 +113,8 @@ export const TRANSLATIONS = {
     badge_matched: "E Match Incident #",
     badge_new: "New Incident Don Open",
     conflict_detected: "Gbege / Contradiction Dey:",
+    ai_rationale_label: "Why AI Reason Am",
+    ai_confidence: "sureness",
 
     // Incident List
     list_heading: "Wahala / Incidents Wey Dey Ground",

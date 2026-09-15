@@ -106,6 +106,25 @@ export default function IncidentDetail({ incidentId, onClose, t = (k) => k }) {
                         />
                       </div>
                     )}
+                    {report.ai_reasoning && (
+                      <div className="report-ai-rationale">
+                        <details className="rationale-details" open>
+                          <summary className="rationale-summary">
+                            <span className="rationale-badge">
+                              🤖 {t('ai_rationale_label')}
+                              {report.ai_confidence !== null && report.ai_confidence !== undefined && (
+                                <span className="confidence-pill">
+                                  {Math.round(report.ai_confidence * 100)}% {t('ai_confidence')}
+                                </span>
+                              )}
+                            </span>
+                          </summary>
+                          <div className="rationale-body">
+                            <p className="rationale-text">{report.ai_reasoning}</p>
+                          </div>
+                        </details>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

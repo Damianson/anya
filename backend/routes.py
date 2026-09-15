@@ -91,7 +91,9 @@ def create_report():
         incident_id=incident_id,
         raw_text=raw_text.strip(),
         image_url=image_url,
-        reporter_label=reporter_label
+        reporter_label=reporter_label,
+        ai_reasoning=ai_data.get('reasoning_snippet'),
+        ai_confidence=ai_data.get('confidence_score')
     )
     db.session.add(report)
     db.session.commit()
@@ -106,6 +108,8 @@ def create_report():
             'matched_incident_id': ai_data.get('matched_incident_id'),
             'has_contradiction': ai_data.get('has_contradiction'),
             'contradiction_reason': ai_data.get('contradiction_reason'),
+            'confidence_score': ai_data.get('confidence_score'),
+            'reasoning_snippet': ai_data.get('reasoning_snippet'),
             'extracted': {
                 'incident_type': ai_data.get('incident_type'),
                 'location': ai_data.get('location'),

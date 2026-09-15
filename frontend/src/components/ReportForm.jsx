@@ -98,6 +98,18 @@ export default function ReportForm({ role, onSubmitSuccess, t = (k) => k }) {
                   <strong>{t('conflict_detected')}</strong> {feedback.ai.contradiction_reason}
                 </p>
               )}
+              {feedback.ai.reasoning_snippet && (
+                <div className="ai-rationale-live">
+                  <p className="ai-rationale-live-text">
+                    <strong>🤖 {t('ai_rationale_label')}:</strong> {feedback.ai.reasoning_snippet}
+                    {feedback.ai.confidence_score !== null && feedback.ai.confidence_score !== undefined && (
+                      <span className="confidence-pill">
+                        {Math.round(feedback.ai.confidence_score * 100)}% {t('ai_confidence')}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

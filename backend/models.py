@@ -65,6 +65,8 @@ class Report(db.Model):
     raw_text = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(500), nullable=True)
     reporter_label = db.Column(db.String(100), nullable=False)  # e.g., 'resident', 'responder', 'bystander'
+    ai_reasoning = db.Column(db.Text, nullable=True)
+    ai_confidence = db.Column(db.Float, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=get_utc_now)
 
     def to_dict(self):
@@ -75,6 +77,8 @@ class Report(db.Model):
             'raw_text': self.raw_text,
             'image_url': self.image_url,
             'reporter_label': self.reporter_label,
+            'ai_reasoning': self.ai_reasoning,
+            'ai_confidence': self.ai_confidence,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
 

@@ -50,18 +50,24 @@ def seed_database():
             incident_id=inc1.id,
             raw_text="Heavy downpour has submerged the Lekki-Epe Expressway by Ajah bridge, flood water entering ground floor shops and several cars completely stalled.",
             reporter_label="resident",
+            ai_reasoning="Initiated primary incident record for severe flash flooding on Lekki-Epe Expressway at Ajah bridge.",
+            ai_confidence=0.96,
             created_at=now - timedelta(minutes=45)
         )
         rep1_b = Report(
             incident_id=inc1.id,
             raw_text="Ajah underbridge towards Abraham Adesanya is flooded waist-deep, vehicles cannot pass and commuters are stranded.",
             reporter_label="resident",
+            ai_reasoning="Matched Incident #1 (Lekki flood) with high spatial correlation: 'Ajah underbridge' / 'Abraham Adesanya' describes the same arterial corridor with consistent waist-deep water levels.",
+            ai_confidence=0.93,
             created_at=now - timedelta(minutes=30)
         )
         rep1_c = Report(
             incident_id=inc1.id,
             raw_text="Water rising fast near Ajah market by Lekki-Epe express, shop owners trying to salvage goods and families trapped in compound.",
             reporter_label="resident",
+            ai_reasoning="Corroborated Incident #1: Report references 'Ajah market by Lekki-Epe express', confirming escalating flood impact on commercial stalls within the same 45-minute window.",
+            ai_confidence=0.91,
             created_at=now - timedelta(minutes=12)
         )
         db.session.add_all([rep1_a, rep1_b, rep1_c])
@@ -89,12 +95,16 @@ def seed_database():
             incident_id=inc2.id,
             raw_text="Massive fire outbreak at commercial plaza in Balogun Market, thick black smoke rising from upper floor clothes shop.",
             reporter_label="resident",
+            ai_reasoning="Initiated primary fire incident for reported blaze at commercial plaza in Balogun Market, Lagos Island.",
+            ai_confidence=0.90,
             created_at=now - timedelta(minutes=60)
         )
         rep2_b = Report(
             incident_id=inc2.id,
             raw_text="I am standing at Balogun Market right by the main plaza. There is NO active fire, only someone burning cartons in the waste bin that has already been put out. Business is normal.",
             reporter_label="resident",
+            ai_reasoning="Matched Incident #2 (Balogun Market) but flagged critical contradiction: On-scene resident reports NO active plaza fire, identifying source as an already-extinguished waste bin.",
+            ai_confidence=0.88,
             created_at=now - timedelta(minutes=18)
         )
         db.session.add_all([rep2_a, rep2_b])
@@ -121,6 +131,8 @@ def seed_database():
             incident_id=inc3.id,
             raw_text="Concrete electricity pole collapsed across the road on Aminu Kano near Banex Plaza, live wires sparking on the tarmac.",
             reporter_label="first_responder",
+            ai_reasoning="Initiated high-urgency electrical hazard incident for collapsed PHCN concrete high-tension pole on Aminu Kano Crescent, Wuse 2, Abuja.",
+            ai_confidence=0.98,
             created_at=now - timedelta(hours=2)
         )
         task3 = Task(
@@ -154,6 +166,8 @@ def seed_database():
             incident_id=inc4.id,
             raw_text="Water gushing from broken Lagos Water Corporation pipe onto the pedestrian walkway along Isaac John Street.",
             reporter_label="resident",
+            ai_reasoning="Initiated low-urgency municipal infrastructure incident for burst water utility main along Isaac John Street sidewalk, Ikeja GRA.",
+            ai_confidence=0.94,
             created_at=now - timedelta(hours=3)
         )
         db.session.add(rep4)
@@ -180,6 +194,8 @@ def seed_database():
             incident_id=inc5.id,
             raw_text="A big branch broke off during the morning storm and is blocking the slow lane of Ring Road near the Challenge junction.",
             reporter_label="resident",
+            ai_reasoning="Initiated low-urgency roadway hazard incident for fallen storm tree branch partially obstructing Ring Road near Challenge junction, Ibadan.",
+            ai_confidence=0.92,
             created_at=now - timedelta(hours=4)
         )
         db.session.add(rep5)
