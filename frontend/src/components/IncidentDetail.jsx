@@ -78,6 +78,20 @@ export default function IncidentDetail({ incidentId, onClose, t = (k) => k }) {
             )}
             <p><strong>{t('detail_first_reported')}</strong> {new Date(incident.created_at).toLocaleString()}</p>
             <p><strong>{t('detail_last_updated')}</strong> {new Date(incident.updated_at).toLocaleString()}</p>
+
+            {incident.latest_ai_reasoning && (
+              <div className="detail-primary-rationale-box">
+                <div className="primary-rationale-header">
+                  <span className="primary-rationale-title">🤖 {t('ai_rationale_label')}</span>
+                  {incident.latest_ai_confidence !== null && incident.latest_ai_confidence !== undefined && (
+                    <span className="confidence-pill">
+                      {Math.round(incident.latest_ai_confidence * 100)}% {t('ai_confidence')}
+                    </span>
+                  )}
+                </div>
+                <p className="primary-rationale-body">{incident.latest_ai_reasoning}</p>
+              </div>
+            )}
           </div>
 
           <div className="linked-reports-section">

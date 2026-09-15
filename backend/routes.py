@@ -126,7 +126,8 @@ def create_report():
 @api_bp.route('/incidents', methods=['GET'])
 def list_incidents():
     """
-    List all incidents, ordered from newest to oldest, including their tasks and report count.
+    List all incidents, ordered from newest to oldest, including their tasks, report count,
+    and latest AI triage rationale and confidence score.
     """
     incidents = Incident.query.order_by(Incident.created_at.desc()).all()
     results = []
@@ -134,6 +135,18 @@ def list_incidents():
         data = inc.to_dict()
         data['tasks'] = [t.to_dict() for t in inc.tasks]
         data['report_count'] = len(inc.reports)
+        
+        # Surface the latest or most significant report's AI reasoning
+        reports_with_ai = [r for r in inc.reports if r.ai_reasoning]
+        if reports_with_ai:
+            # Prefer corroboration/conflict reports (id > 1) if available, or the latest
+            chosen_report = reports_with_ai[-1]
+            data['latest_ai_reasoning'] = chosen_report.ai_reasoning
+            data['latest_ai_confidence'] = chosen_report.ai_confidence
+        else:
+            data['latest_ai_reasoning'] = None
+            data['latest_ai_confidence'] = None
+            
         results.append(data)
     return jsonify(results), 200
 
@@ -141,15 +154,26 @@ def list_incidents():
 @api_bp.route('/incidents/<int:id>', methods=['GET'])
 def get_incident(id):
     """
-    Retrieve incident detail by ID, including its linked reports and tasks.
+    Retrieve incident detail by ID, including its linked reports, tasks, and primary AI rationale.
     """
     incident = db.session.get(Incident, id)
     if not incident:
         return jsonify({'error': f'Incident {id} not found'}), 404
 
     incident_data = incident.to_dict()
-    incident_data['reports'] = [r.to_dict() for r in incident.reports]
+    reports = [r.to_dict() for r in incident.reports]
+    incident_data['reports'] = reports
     incident_data['tasks'] = [t.to_dict() for t in incident.tasks]
+    
+    reports_with_ai = [r for r in reports if r.get('ai_reasoning')]
+    if reports_with_ai:
+        chosen = reports_with_ai[-1]
+        incident_data['latest_ai_reasoning'] = chosen.get('ai_reasoning')
+        incident_data['latest_ai_confidence'] = chosen.get('ai_confidence')
+    else:
+        incident_data['latest_ai_reasoning'] = None
+        incident_data['latest_ai_confidence'] = None
+
     return jsonify(incident_data), 200
 
 

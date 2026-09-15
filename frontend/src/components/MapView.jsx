@@ -78,6 +78,12 @@ export default function MapView({ incidents, onSelectIncident, t }) {
           </div>
           <h4 style="margin: 0 0 6px 0; font-size: 14px; color: #0f172a; line-height: 1.3;">${incident.title}</h4>
           <p style="margin: 0 0 8px 0; color: #64748b; font-size: 12px;">📍 ${incident.location_text}</p>
+          ${incident.latest_ai_reasoning ? `
+            <div style="margin: 0 0 8px 0; padding: 6px 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; color: #334155; line-height: 1.35;">
+              <div style="font-weight: 700; margin-bottom: 2px; color: #0f172a;">🤖 ${t('ai_rationale_label')}:</div>
+              ${incident.latest_ai_reasoning}
+            </div>
+          ` : ''}
           <button id="popup-btn-${incident.id}" style="width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 4px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer;">
             ${t('btn_view_details')}
           </button>

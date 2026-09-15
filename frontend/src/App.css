@@ -392,6 +392,35 @@
   margin-top: 4px;
 }
 
+.card-ai-rationale {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 3px solid #0f172a;
+  border-radius: 4px;
+}
+
+.card-rationale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.rationale-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.card-rationale-text {
+  margin: 0;
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.45;
+}
+
 .view-btn {
   margin-top: 12px;
   padding: 6px 14px;
@@ -559,6 +588,37 @@
   gap: 8px;
   margin-bottom: 6px;
   flex-wrap: wrap;
+}
+
+.detail-primary-rationale-box {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #0f172a;
+  border-radius: 6px;
+}
+
+.primary-rationale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.primary-rationale-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.primary-rationale-body {
+  margin: 0;
+  font-size: 13px;
+  color: #1e293b;
+  line-height: 1.5;
 }
 
 .linked-reports-section h4 {

@@ -89,6 +89,20 @@ export default function IncidentList({
                   </p>
                 </div>
 
+                {incident.latest_ai_reasoning && (
+                  <div className="card-ai-rationale">
+                    <div className="card-rationale-header">
+                      <span className="rationale-tag">🤖 {t('ai_rationale_label')}</span>
+                      {incident.latest_ai_confidence !== null && incident.latest_ai_confidence !== undefined && (
+                        <span className="confidence-pill">
+                          {Math.round(incident.latest_ai_confidence * 100)}% {t('ai_confidence')}
+                        </span>
+                      )}
+                    </div>
+                    <p className="card-rationale-text">{incident.latest_ai_reasoning}</p>
+                  </div>
+                )}
+
                 <button
                   type="button"
                   className="view-btn"
