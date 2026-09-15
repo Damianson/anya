@@ -14,7 +14,7 @@ const URGENCY_COLORS = {
   critical: '#dc2626', // red
   high: '#ea580c',     // orange
   medium: '#ca8a04',   // yellow
-  low: '#0284c7',      // blue
+  low: '#16a34a',      // green
 };
 
 export default function MapView({ incidents, onSelectIncident, t }) {
@@ -78,7 +78,7 @@ export default function MapView({ incidents, onSelectIncident, t }) {
           </div>
           <h4 style="margin: 0 0 6px 0; font-size: 14px; color: #0f172a; line-height: 1.3;">${incident.title}</h4>
           <p style="margin: 0 0 8px 0; color: #64748b; font-size: 12px;">📍 ${incident.location_text}</p>
-          <button id="popup-btn-${incident.id}" style="width: 100%; background: #2563eb; color: #fff; border: none; border-radius: 4px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer;">
+          <button id="popup-btn-${incident.id}" style="width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 4px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer;">
             ${t('btn_view_details')}
           </button>
         </div>
@@ -130,3 +130,4 @@ export default function MapView({ incidents, onSelectIncident, t }) {
     </div>
   );
 }
+

@@ -1,9 +1,21 @@
-/* App Layout */
+/* ==========================================================================
+   Anya Emergency Operations Platform - Stylesheet
+   Design System: Serious, authoritative emergency command center console.
+   Rules:
+     - Strict 8px/16px/24px spacing scale
+     - System font stack (system-ui / -apple-system / BlinkMacSystemFont / Inter)
+     - STRICT MONOCHROMATIC BASE: Only urgency (red/orange/yellow/green) has color.
+       All buttons, badges, toggles, borders, and text are neutral slate/gray/black/white.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Layout & Shell
+   -------------------------------------------------------------------------- */
 .app-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 24px 20px;
+  padding: 24px 24px 48px;
   box-sizing: border-box;
   text-align: left;
 }
@@ -12,117 +24,168 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid #cbd5e1;
   padding-bottom: 16px;
   margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .header-branding h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 24px;
+  font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.5px;
+  text-transform: uppercase;
 }
 
 .header-tagline {
   margin: 4px 0 0;
-  font-size: 14px;
+  font-size: 13px;
   color: #64748b;
+  font-weight: 500;
 }
 
-/* Role Toggle */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   2. Segmented Toggles (Role, Language, View Mode)
+   -------------------------------------------------------------------------- */
 .role-toggle-container {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .role-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
-}
-
-.role-buttons {
-  display: flex;
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: 3px;
-  border: 1px solid #cbd5e1;
-}
-
-.role-btn {
-  border: none;
-  background: transparent;
-  padding: 8px 16px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #64748b;
-  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-buttons,
+.lang-buttons,
+.view-mode-toggle {
+  display: inline-flex;
+  background: #f1f5f9;
   border-radius: 6px;
-  transition: all 0.2s;
+  padding: 2px;
+  border: 1px solid #cbd5e1;
+  gap: 2px;
 }
 
-.role-btn.active {
-  background: #2563eb;
+.role-btn,
+.lang-btn,
+.view-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease-in-out;
+}
+
+.role-btn:hover,
+.lang-btn:hover,
+.view-toggle-btn:hover {
+  color: #0f172a;
+}
+
+.role-btn.active,
+.lang-btn.active,
+.view-toggle-btn.active {
+  background: #0f172a;
   color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Dashboard Grid */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-icon {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* --------------------------------------------------------------------------
+   3. Grid & Cards
+   -------------------------------------------------------------------------- */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 400px 1fr;
   gap: 24px;
   align-items: start;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 920px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Cards */
 .form-card,
 .list-card,
-.detail-card {
+.detail-card,
+.responder-workspace {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .form-card h2,
 .list-card h2,
-.detail-card h2 {
+.detail-card h2,
+.responder-header h2 {
   margin: 0 0 4px;
-  font-size: 20px;
-  color: #1e293b;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.2px;
 }
 
 .form-subtitle {
-  margin: 0 0 20px;
+  margin: 0 0 24px;
   font-size: 13px;
   color: #64748b;
+  line-height: 1.4;
 }
 
-/* Form Controls */
+/* --------------------------------------------------------------------------
+   4. Form Elements & Controls
+   -------------------------------------------------------------------------- */
 .form-group {
   margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #334155;
-  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 8px;
 }
 
 .required {
-  color: #dc2626;
+  color: #0f172a;
+  margin-left: 2px;
 }
 
 .form-group input,
@@ -130,106 +193,121 @@
   width: 100%;
   box-sizing: border-box;
   padding: 10px 12px;
-  font-size: 14px;
+  font-size: 13px;
   font-family: inherit;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  background: #f8fafc;
+  background: #ffffff;
   color: #0f172a;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #94a3b8;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #2563eb;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: #0f172a;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.15);
 }
 
 .submit-btn {
   width: 100%;
-  padding: 12px;
-  font-size: 14px;
+  padding: 12px 16px;
+  font-size: 13px;
   font-weight: 600;
-  background: #2563eb;
+  letter-spacing: 0.3px;
+  background: #0f172a;
   color: #ffffff;
-  border: none;
+  border: 1px solid #0f172a;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s, border-color 0.15s;
+  margin-top: 8px;
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #1e293b;
+  border-color: #1e293b;
 }
 
 .submit-btn:disabled {
   background: #94a3b8;
+  border-color: #94a3b8;
   cursor: not-allowed;
 }
 
-/* Alerts */
+/* --------------------------------------------------------------------------
+   5. Alerts & System Feedback
+   -------------------------------------------------------------------------- */
 .alert {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: 6px;
   font-size: 13px;
   margin-bottom: 16px;
   line-height: 1.4;
+  border: 1px solid #cbd5e1;
 }
 
 .alert-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
+  background: #f8fafc;
+  border: 1px solid #0f172a;
+  color: #0f172a;
+  font-weight: 500;
 }
 
 .alert-success {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
 }
 
 .ai-feedback-box {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px dashed #86efac;
+  border-top: 1px dashed #cbd5e1;
 }
 
 .conflict-alert {
-  margin-top: 6px;
-  color: #b45309;
-  font-weight: 500;
+  margin-top: 8px;
+  color: #0f172a;
+  font-weight: 600;
 }
 
-/* Incidents Grid & Cards */
+/* --------------------------------------------------------------------------
+   6. Incident List & Cards
+   -------------------------------------------------------------------------- */
 .list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
   padding-bottom: 12px;
 }
 
 .empty-state {
-  color: #94a3b8;
-  font-size: 14px;
-  padding: 24px 0;
+  color: #64748b;
+  font-size: 13px;
+  padding: 32px 0;
   text-align: center;
 }
 
 .incidents-grid {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .incident-item {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 16px;
-  background: #fafafa;
-  transition: border-color 0.2s, background 0.2s;
+  background: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
   cursor: pointer;
 }
 
@@ -239,8 +317,9 @@
 }
 
 .incident-item.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: #0f172a;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #0f172a;
 }
 
 .incident-top {
@@ -252,22 +331,26 @@
 }
 
 .incident-id {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: #64748b;
-  background: #e2e8f0;
+  font-family: var(--font-mono, monospace);
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
   padding: 2px 6px;
   border-radius: 4px;
 }
 
 .incident-title {
-  margin: 0 0 10px;
-  font-size: 16px;
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
   color: #0f172a;
+  line-height: 1.35;
 }
 
 .incident-meta {
-  font-size: 13px;
+  font-size: 12px;
   color: #475569;
   display: flex;
   flex-direction: column;
@@ -275,106 +358,129 @@
 }
 
 .incident-time {
-  font-size: 12px;
+  font-size: 11px;
   color: #94a3b8;
   margin-top: 4px;
 }
 
 .view-btn {
   margin-top: 12px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 12px;
   font-weight: 600;
-  background: #ffffff;
+  background: #f8fafc;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
   cursor: pointer;
-  color: #1e293b;
+  color: #0f172a;
+  transition: all 0.15s ease;
 }
 
 .view-btn:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
 }
 
-/* Badges & Pills */
-.urgency-pill,
-.state-pill,
-.type-pill,
-.badge {
+/* --------------------------------------------------------------------------
+   7. Urgency Colors (EXCLUSIVELY RESERVED - Only chromatic elements in app)
+   -------------------------------------------------------------------------- */
+.urgency-pill {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   padding: 3px 8px;
-  border-radius: 12px;
-  letter-spacing: 0.3px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  border: 1px solid transparent;
 }
 
-/* Urgency Colors */
 .urgency-critical {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
 }
 
 .urgency-high {
-  background: #ffedd5;
-  color: #9a3412;
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
 }
 
 .urgency-medium {
-  background: #fef9c3;
+  background: #fefce8;
   color: #854d0e;
+  border-color: #fef08a;
 }
 
 .urgency-low {
-  background: #e0f2fe;
-  color: #075985;
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
 }
 
-/* State Colors */
-.state-unverified {
+/* --------------------------------------------------------------------------
+   8. Neutral Status Pills & Badges (Strictly Monochrome)
+   -------------------------------------------------------------------------- */
+.state-pill,
+.type-pill,
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
   background: #f1f5f9;
-  color: #475569;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.state-unverified {
+  background: #ffffff;
+  color: #64748b;
+  border: 1px dashed #cbd5e1;
 }
 
 .state-corroborated {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #94a3b8;
 }
 
 .state-verified {
-  background: #dcfce7;
-  color: #166534;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
 }
 
 .state-disputed {
-  background: #fae8ff;
-  color: #86198f;
-  border: 1px solid #f0abfc;
+  background: #ffffff;
+  color: #0f172a;
+  border: 2px solid #0f172a;
 }
 
 .state-resolved {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.type-pill {
-  background: #f8fafc;
-  color: #334155;
-  border: 1px solid #e2e8f0;
+  background: #e2e8f0;
+  color: #475569;
+  border: 1px solid #cbd5e1;
 }
 
 .badge-match {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
 }
 
 .badge-new {
-  background: #dcfce7;
-  color: #15803d;
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid #0f172a;
 }
 
-/* Detail View */
+/* --------------------------------------------------------------------------
+   9. Detail View
+   -------------------------------------------------------------------------- */
 .detail-header {
   display: flex;
   justify-content: space-between;
@@ -385,26 +491,29 @@
 }
 
 .close-btn {
-  background: #f1f5f9;
+  background: #f8fafc;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  color: #475569;
+  color: #334155;
   cursor: pointer;
+  transition: all 0.15s;
 }
 
 .close-btn:hover {
-  background: #e2e8f0;
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
 }
 
 .detail-meta-box {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -412,7 +521,7 @@
 
 .detail-meta-box h3 {
   margin: 0 0 6px;
-  font-size: 18px;
+  font-size: 16px;
   color: #0f172a;
 }
 
@@ -425,8 +534,11 @@
 
 .linked-reports-section h4 {
   margin: 0 0 12px;
-  font-size: 16px;
-  color: #1e293b;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
 .reports-list {
@@ -437,9 +549,9 @@
 
 .report-item {
   border: 1px solid #e2e8f0;
-  border-left: 4px solid #2563eb;
+  border-left: 3px solid #0f172a;
   border-radius: 6px;
-  padding: 14px;
+  padding: 14px 16px;
   background: #ffffff;
 }
 
@@ -452,39 +564,42 @@
 
 .reporter-tag {
   font-weight: 700;
-  color: #334155;
+  color: #0f172a;
   text-transform: capitalize;
 }
 
 .report-time {
   color: #94a3b8;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
 }
 
 .report-text {
-  font-size: 14px;
-  color: #1e293b;
+  font-size: 13px;
+  color: #334155;
   line-height: 1.5;
   white-space: pre-wrap;
 }
 
 .report-image-preview {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .report-image-preview img {
   max-width: 100%;
   max-height: 240px;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
 }
 
-/* Responder Workspace */
+/* --------------------------------------------------------------------------
+   10. Responder Workspace & Triage Operations
+   -------------------------------------------------------------------------- */
 .responder-workspace {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .responder-header {
@@ -492,8 +607,8 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 14px;
-  margin-bottom: 20px;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .responder-sub {
@@ -505,19 +620,22 @@
 .refresh-btn {
   background: #f8fafc;
   border: 1px solid #cbd5e1;
-  padding: 8px 14px;
-  font-size: 13px;
+  padding: 8px 16px;
+  font-size: 12px;
   font-weight: 600;
   border-radius: 6px;
   cursor: pointer;
-  color: #334155;
+  color: #0f172a;
+  transition: all 0.15s;
 }
 
 .refresh-btn:hover {
-  background: #f1f5f9;
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
 }
 
-/* Triage Metrics */
+/* Triage Metrics Console (Monochrome Command Center) */
 .triage-metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -532,66 +650,64 @@
 }
 
 .metric-box {
-  border-radius: 8px;
-  padding: 14px 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
 .metric-number {
-  font-size: 26px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  color: #0f172a;
+  line-height: 1;
 }
 
 .metric-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: #64748b;
 }
 
-.alert-box {
-  background: #fff1f2;
-  border: 1px solid #fecdd3;
-  color: #be123c;
-}
-
-.success-box {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
-}
-
+.alert-box,
+.success-box,
 .neutral-box {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  color: #475569;
+  color: #0f172a;
 }
 
-/* Responder Cards */
+/* Responder Action Cards */
 .responder-cards {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .responder-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  padding: 18px;
+  padding: 16px 20px;
   background: #ffffff;
-  transition: all 0.2s;
+  transition: border-color 0.15s;
+}
+
+.responder-card:hover {
+  border-color: #94a3b8;
 }
 
 .responder-card.card-disputed {
-  border-left: 5px solid #c026d3;
-  background: #fdf4ff;
+  border-left: 4px solid #0f172a;
 }
 
 .responder-card.card-unverified {
-  border-left: 5px solid #f59e0b;
-  background: #fffbeb;
+  border-left: 4px solid #64748b;
 }
 
 .responder-card-top {
@@ -609,68 +725,68 @@
 }
 
 .card-reports-count {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: #475569;
   background: #f1f5f9;
-  padding: 3px 8px;
+  border: 1px solid #e2e8f0;
+  padding: 2px 6px;
   border-radius: 4px;
 }
 
 .responder-card-title {
-  margin: 0 0 10px;
-  font-size: 17px;
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
   color: #0f172a;
 }
 
 .responder-card-meta {
-  font-size: 13px;
+  font-size: 12px;
   color: #475569;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .card-timestamp {
   font-size: 11px;
   color: #94a3b8;
+  font-family: var(--font-mono, monospace);
 }
 
-/* Verification Actions */
+/* Verification Action Buttons */
 .verification-actions {
   border-top: 1px solid #e2e8f0;
-  padding-top: 12px;
-  margin-top: 12px;
+  padding-top: 14px;
+  margin-top: 14px;
 }
 
 .action-label {
   display: block;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: #64748b;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
 
 .action-buttons-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .btn-action {
-  border: none;
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
   padding: 8px 14px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.btn-action:hover:not(:disabled) {
-  opacity: 0.9;
+  transition: all 0.15s ease;
 }
 
 .btn-action:disabled {
@@ -679,30 +795,53 @@
 }
 
 .btn-verify {
-  background: #16a34a;
+  background: #0f172a;
   color: #ffffff;
+  border-color: #0f172a;
+}
+
+.btn-verify:hover:not(:disabled) {
+  background: #1e293b;
+  border-color: #1e293b;
 }
 
 .btn-dispute {
-  background: #9333ea;
-  color: #ffffff;
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.btn-dispute:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
 }
 
 .btn-suggest-task {
-  background: #2563eb;
-  color: #ffffff;
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.btn-suggest-task:hover:not(:disabled) {
+  background: #e2e8f0;
 }
 
 .btn-details {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  color: #1e293b;
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
 }
 
-/* Tasks Inside Incident Card */
+.btn-details:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+/* --------------------------------------------------------------------------
+   11. Tasks Section Inside Card
+   -------------------------------------------------------------------------- */
 .incident-tasks-container {
   margin-top: 16px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
@@ -710,8 +849,11 @@
 
 .incident-tasks-container h4 {
   margin: 0 0 8px;
-  font-size: 13px;
-  color: #1e293b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #334155;
 }
 
 .no-tasks-text {
@@ -751,16 +893,18 @@
   text-transform: uppercase;
   padding: 2px 6px;
   border-radius: 4px;
+  letter-spacing: 0.3px;
 }
 
 .status-open {
-  background: #fef9c3;
-  color: #854d0e;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
 }
 
 .status-claimed {
-  background: #e0e7ff;
-  color: #3730a3;
+  background: #0f172a;
+  color: #ffffff;
 }
 
 .task-desc {
@@ -781,106 +925,40 @@
 }
 
 .claim-btn {
-  background: #0284c7;
+  background: #0f172a;
   color: #ffffff;
-  border: none;
+  border: 1px solid #0f172a;
   padding: 4px 10px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.15s;
 }
 
 .claim-btn:hover {
-  background: #0369a1;
+  background: #1e293b;
+  border-color: #1e293b;
 }
 
-/* Header Controls & Language Switcher */
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.lang-switcher {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.lang-icon {
-  font-size: 16px;
-}
-
-.lang-buttons {
-  display: flex;
-  background: #f1f5f9;
-  border-radius: 6px;
-  padding: 2px;
-  border: 1px solid #cbd5e1;
-}
-
-.lang-btn {
-  border: none;
-  background: transparent;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748b;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.lang-btn.active {
-  background: #0f172a;
-  color: #ffffff;
-}
-
-/* View Mode Toggle */
-.view-mode-toggle {
-  display: flex;
-  background: #f1f5f9;
-  border-radius: 6px;
-  padding: 2px;
-  border: 1px solid #cbd5e1;
-  gap: 2px;
-}
-
-.view-toggle-btn {
-  border: none;
-  background: transparent;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748b;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.view-toggle-btn.active {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-/* Leaflet Map & Legend */
+/* --------------------------------------------------------------------------
+   12. Leaflet Map & Legend
+   -------------------------------------------------------------------------- */
 .map-view-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .map-legend {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   font-size: 12px;
-  color: #475569;
+  color: #334155;
   background: #f8fafc;
-  padding: 8px 12px;
+  padding: 8px 16px;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   flex-wrap: wrap;
 }
 
@@ -901,11 +979,11 @@
 .dot-critical { background: #dc2626; }
 .dot-high { background: #ea580c; }
 .dot-medium { background: #ca8a04; }
-.dot-low { background: #0284c7; }
+.dot-low { background: #16a34a; }
 
 .leaflet-map-container {
   width: 100%;
-  height: 460px;
+  height: 480px;
   border-radius: 8px;
   border: 1px solid #cbd5e1;
   z-index: 1;
@@ -914,5 +992,3 @@
 .map-popup-content {
   min-width: 180px;
 }
-
-
