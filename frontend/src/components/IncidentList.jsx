@@ -59,6 +59,8 @@ export default function IncidentList({
             const isSelected = selectedIncidentId === incident.id;
             const urgencyKey = `urgency_${incident.urgency}`;
             const stateKey = `state_${incident.verification_state}`;
+            const claimedTasks = (incident.tasks || []).filter(t => t.status === 'claimed');
+            const hasActiveResponse = claimedTasks.length > 0;
 
             return (
               <div
@@ -74,7 +76,21 @@ export default function IncidentList({
                   <span className={`state-pill state-${incident.verification_state}`}>
                     {t(stateKey) || incident.verification_state}
                   </span>
+                  {hasActiveResponse && (
+                    <span className="response-underway-pill" title={claimedTasks.map(t => t.claimed_by).filter(Boolean).join(', ')}>
+                      ⚡ {t('badge_response_underway')}
+                    </span>
+                  )}
                 </div>
+
+                {hasActiveResponse && (
+                  <div className="card-response-callout">
+                    <span className="response-dot"></span>
+                    <span className="response-callout-text">
+                      <strong>{claimedTasks[0].claimed_by || 'Field Team'}</strong>: "{claimedTasks[0].description}"
+                    </span>
+                  </div>
+                )}
 
                 <h3 className="incident-title">{incident.title}</h3>
 

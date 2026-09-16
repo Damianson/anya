@@ -66,6 +66,13 @@ export const TRANSLATIONS = {
     detail_last_updated: "Last Updated:",
     detail_linked_reports: "Linked Reports",
     detail_no_reports: "No linked reports available.",
+    detail_active_response: "Active Response & Field Operations",
+    detail_no_tasks: "No operational tasks dispatched yet.",
+    badge_response_underway: "Response Underway",
+    badge_teams_active: "active",
+    task_status_claimed: "In Progress",
+    task_status_open: "Awaiting Responder",
+    task_status_completed: "Completed",
 
     // Responder View
     responder_heading: "Emergency Responder Triage Board",
@@ -161,6 +168,13 @@ export const TRANSLATIONS = {
     detail_last_updated: "Last Time We Update Am:",
     detail_linked_reports: "Reports Wey Connect to This Incident",
     detail_no_reports: "No report connect yet.",
+    detail_active_response: "Work Wey Responders Dey Do for Ground",
+    detail_no_tasks: "Nobody never pick work for this incident yet.",
+    badge_response_underway: "Help Dey Ground",
+    badge_teams_active: "team dey work",
+    task_status_claimed: "Work Dey Go On",
+    task_status_open: "Dey Wait Make Person Pick Am",
+    task_status_completed: "Work Don Finish",
 
     // Responder View
     responder_heading: "Emergency Team Triage Workspace",

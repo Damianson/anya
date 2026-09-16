@@ -93,6 +93,40 @@ export default function IncidentDetail({ incidentId, onClose, t = (k) => k }) {
             )}
           </div>
 
+          {/* Active Response & Field Operations Section */}
+          <div className="detail-tasks-section">
+            <h4>
+              ⚡ {t('detail_active_response')} ({incident.tasks ? incident.tasks.length : 0})
+            </h4>
+            {(!incident.tasks || incident.tasks.length === 0) ? (
+              <p className="empty-state">{t('detail_no_tasks')}</p>
+            ) : (
+              <div className="detail-tasks-list">
+                {incident.tasks.map((task) => {
+                  const isClaimed = task.status === 'claimed';
+                  return (
+                    <div key={task.id} className={`detail-task-card ${isClaimed ? 'task-active' : ''}`}>
+                      <div className="detail-task-header">
+                        <span className={`task-badge status-${task.status}`}>
+                          {isClaimed ? `⚡ ${t('task_status_claimed')}` : t(`task_status_${task.status}`) || task.status}
+                        </span>
+                        {task.claimed_by && (
+                          <span className="task-claimed-unit">
+                            👤 {t('claimed_by_label')} <strong>{task.claimed_by}</strong>
+                          </span>
+                        )}
+                        <span className="task-time">
+                          {task.created_at ? new Date(task.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </span>
+                      </div>
+                      <p className="detail-task-desc">{task.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           <div className="linked-reports-section">
             <h4>{t('detail_linked_reports')} ({incident.reports ? incident.reports.length : 0})</h4>
             {(!incident.reports || incident.reports.length === 0) ? (
