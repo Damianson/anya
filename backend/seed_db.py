@@ -18,9 +18,20 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from app import create_app
 from models import db, Incident, Report, Task
 
-def seed_database():
+def seed_database(database_url=None):
+    if database_url:
+        os.environ['DATABASE_URL'] = database_url
+
     app = create_app()
     with app.app_context():
+        target_uri = app.config['SQLALCHEMY_DATABASE_URI']
+        # Mask password in log output if present
+        display_uri = target_uri
+        if '@' in target_uri:
+            prefix, rest = target_uri.split('://', 1)
+            user_pass, host_db = rest.split('@', 1)
+            display_uri = f"{prefix}://***:***@{host_db}"
+        print(f"Target Database: {display_uri}")
         print("Resetting database schema...")
         db.drop_all()
         db.create_all()
@@ -213,5 +224,13 @@ def seed_database():
         print("=" * 70)
 
 if __name__ == '__main__':
-    seed_database()
+    custom_url = None
+    if '--url' in sys.argv:
+        try:
+            idx = sys.argv.index('--url')
+            custom_url = sys.argv[idx + 1]
+        except IndexError:
+            print("Error: --url specified without a database connection string.")
+            sys.exit(1)
+    seed_database(database_url=custom_url)
 

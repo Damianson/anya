@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-const API_BASE = 'http://127.0.0.1:5000';
+import { API_BASE } from '../config';
 
 const QUICK_SCENARIOS = [
   {

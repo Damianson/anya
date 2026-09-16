@@ -195,29 +195,59 @@ python seed_db.py
 ### Step 4: Run Automated Verification Suite
 Verify the complete end-to-end golden path with zero failures:
 ```bash
-python verify_golden_path.py
+python tests/verify_golden_path.py
 ```
 
 ### Step 5: Start the Backend Server
 ```bash
 python app.py
-# Backend runs on http://localhost:5000
+# Backend runs on http://localhost:5000 (serves API and compiled frontend SPA)
 ```
 
-### Step 6: Start the Frontend Application
+### Step 6: Start the Frontend Application (Development Mode)
 In a new terminal window:
 ```bash
 cd ../frontend
 npm install
 npm run dev
-# Frontend runs on http://localhost:5173
+# Frontend runs on http://localhost:5173 with hot-reloading
 ```
 
 Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 8. Testing the Features in the UI
+## 8. Deployment on Render (Docker)
+
+Anya is fully dockerized and configured for zero-configuration, single-service deployment on **Render**:
+
+### Option A: 1-Click Blueprint (`render.yaml`)
+1. In the [Render Dashboard](https://dashboard.render.com), click **New +** $\rightarrow$ **Blueprint**.
+2. Connect your GitHub repository. Render will detect `render.yaml` and provision:
+   - A **Docker Web Service** running Gunicorn + Flask + compiled Vite SPA.
+   - An optional **Managed PostgreSQL** database (or defaults to SQLite).
+3. Add your `GEMINI_API_KEY` under Environment Variables.
+
+### Option B: Manual Web Service
+1. Click **New +** $\rightarrow$ **Web Service** $\rightarrow$ Build and deploy from a Git repository.
+2. Select **Docker** as runtime.
+3. Configure environment variables:
+   - `GEMINI_API_KEY`: Your Google Gemini API Key.
+   - `GEMINI_MODEL`: `gemini-3.7-flash` (or `gemini-3.6-flash`).
+   - `DATABASE_URL`: (Optional) PostgreSQL connection string from Render Postgres.
+
+### Step 7: Seed Production Database & Verify Live URL
+```bash
+# Seed production database from local machine or Render Shell:
+DATABASE_URL="postgres://..." python backend/seed_db.py
+
+# Confirm 100% pass on the live deployment URL:
+python backend/tests/verify_live_deployment.py https://anya-crisis-platform.onrender.com
+```
+
+---
+
+## 9. Testing the Features in the UI
 
 1. **Test 2G SMS Ingestion**:
    - Click **`[ 📱 2G SMS Ingest Simulator ]`** in the top navigation bar.
@@ -235,7 +265,7 @@ Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 9. Future Roadmap: From Invention Sprint to Pan-African Scale
+## 10. Future Roadmap: From Invention Sprint to Pan-African Scale
 
 - **Native USSD Integration (`*384#`)**: Partnering with telecom operators (MTN, Airtel, Safaricom) for menu-driven reporting on zero-balance feature phones.
 - **WhatsApp Cloud API Integration**: Direct voice-note transcription using Gemini Multimodal Audio to allow illiterate citizens to report emergencies in local dialects (Yoruba, Hausa, Igbo, Swahili).
@@ -244,8 +274,9 @@ Open **`http://localhost:5173`** in your browser.
 
 ---
 
-## 10. License & Acknowledgments
+## 11. License & Acknowledgments
 
 Built for the **Andela & Open Society Foundations (OSF)** Invention Sprint, inspired by OSF's *Transformative Peace in Africa: Shifting Power to Communities* initiative and supported by **Build Up**.
 
 Licensed under the [MIT License](LICENSE).
+

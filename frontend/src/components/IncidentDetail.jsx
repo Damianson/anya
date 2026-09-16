@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
-const API_BASE = 'http://127.0.0.1:5000';
+import { API_BASE } from '../config';
 
 export default function IncidentDetail({ incidentId, onClose, t = (k) => k }) {
   const [incident, setIncident] = useState(null);

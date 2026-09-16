@@ -6,9 +6,8 @@ import IncidentDetail from './components/IncidentDetail';
 import ResponderView from './components/ResponderView';
 import SmsSimulator from './components/SmsSimulator';
 import { TRANSLATIONS } from './translations';
+import { API_BASE } from './config';
 import './App.css';
-
-const API_BASE = 'http://127.0.0.1:5000';
 
 export default function App() {
   const [lang, setLang] = useState('en'); // 'en' | 'pcm'

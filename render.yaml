@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: anya-crisis-platform
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GEMINI_MODEL
+        value: gemini-3.7-flash
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: anya-db
+          property: connectionString
+
+databases:
+  - name: anya-db
+    plan: free
+    region: oregon
+    databaseName: anya
+    user: anya_user
+

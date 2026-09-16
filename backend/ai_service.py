@@ -137,46 +137,58 @@ TASK REQUIREMENTS:
 Output structured JSON matching the requested schema."""
 
     model_name = os.environ.get('GEMINI_MODEL', 'gemini-3.6-flash')
-    max_attempts = 3
+    model_candidates = [model_name]
+    for fb in ['gemini-3.7-flash', 'gemini-3.5-flash', 'gemini-flash-latest']:
+        if fb not in model_candidates:
+            model_candidates.append(fb)
 
-    for attempt in range(max_attempts):
-        try:
-            client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_json_schema=ReportAnalysisResult.model_json_schema(),
-                    temperature=0.1,
+    last_error = None
+    client = genai.Client(api_key=api_key)
+
+    for current_model in model_candidates:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=current_model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_json_schema=ReportAnalysisResult.model_json_schema(),
+                        temperature=0.1,
+                    )
                 )
-            )
 
-            if not response.text:
-                logger.warning("Empty response received from Gemini API.")
-                return _get_fallback_result(raw_text, "Empty LLM response")
+                if not response.text:
+                    logger.warning(f"Empty response received from Gemini API ({current_model}).")
+                    continue
 
-            # Parse and validate with Pydantic
-            parsed_json = json.loads(response.text)
-            validated = ReportAnalysisResult.model_validate(parsed_json)
-            
-            return {
-                'status': 'success',
-                'data': validated.model_dump()
-            }
+                # Parse and validate with Pydantic
+                parsed_json = json.loads(response.text)
+                validated = ReportAnalysisResult.model_validate(parsed_json)
+                
+                return {
+                    'status': 'success',
+                    'data': validated.model_dump()
+                }
 
-        except ValidationError as ve:
-            logger.error(f"Gemini response validation error: {ve}")
-            return _get_fallback_result(raw_text, f"Pydantic validation error: {str(ve)}")
-        except Exception as e:
-            err_msg = str(e)
-            if attempt < max_attempts - 1 and ("503" in err_msg or "429" in err_msg or "UNAVAILABLE" in err_msg):
-                wait_secs = 2 * (attempt + 1)
-                logger.warning(f"Transient Gemini API error ({err_msg}). Retrying in {wait_secs}s...")
-                time.sleep(wait_secs)
-                continue
-            logger.error(f"Gemini API call failed: {e}")
-            return _get_fallback_result(raw_text, f"API Exception: {err_msg}")
+            except ValidationError as ve:
+                logger.error(f"Gemini response validation error: {ve}")
+                return _get_fallback_result(raw_text, f"Pydantic validation error: {str(ve)}")
+            except Exception as e:
+                last_error = e
+                err_msg = str(e)
+                if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+                    logger.warning(f"Model {current_model} rate-limited. Trying fallback candidate...")
+                    break  # Move to next model candidate immediately
+                elif "503" in err_msg or "UNAVAILABLE" in err_msg:
+                    time.sleep(2)
+                    continue
+                else:
+                    logger.warning(f"Gemini API error with {current_model}: {e}")
+                    break
+
+    logger.error(f"All Gemini model candidates exhausted. Last error: {last_error}")
+    return _get_fallback_result(raw_text, f"API Exception: {str(last_error)}")
 
 
 def generate_suggested_task(incident_data: dict) -> str:
@@ -211,22 +223,29 @@ Examples:
 - "Cordon off downed high-voltage lines at 5th and Main"
 """
     model_name = os.environ.get('GEMINI_MODEL', 'gemini-3.6-flash')
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=model_name,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.2,
-                max_output_tokens=50,
+    model_candidates = [model_name]
+    for fb in ['gemini-3.7-flash', 'gemini-3.5-flash', 'gemini-flash-latest']:
+        if fb not in model_candidates:
+            model_candidates.append(fb)
+
+    client = genai.Client(api_key=api_key)
+    for current_model in model_candidates:
+        try:
+            response = client.models.generate_content(
+                model=current_model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.2,
+                    max_output_tokens=50,
+                )
             )
-        )
-        if response.text:
-            task_text = response.text.strip().strip('"').strip("'")
-            if task_text:
-                return task_text
-    except Exception as e:
-        logger.warning(f"Task generation LLM call failed: {e}")
+            if response.text:
+                task_text = response.text.strip().strip('"').strip("'")
+                if task_text:
+                    return task_text
+        except Exception as e:
+            logger.warning(f"Task generation with {current_model} failed: {e}")
+            continue
 
     return fallback_task
 

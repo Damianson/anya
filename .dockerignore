@@ -1,0 +1,36 @@
+# Git and metadata
+.git
+.gitignore
+README.md
+
+# Virtual environments and dependencies
+.venv
+backend/.venv
+node_modules
+frontend/node_modules
+
+# Python caches and local databases
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+backend/__pycache__
+backend/**/__pycache__
+backend/instance/*.db
+backend/instance/*.sqlite
+
+# Environment secrets
+.env
+backend/.env
+frontend/.env
+*.env.local
+
+# Build output (will be built fresh in Docker)
+frontend/dist
+
+# IDE and OS files
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
