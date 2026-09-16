@@ -55,6 +55,15 @@ class ReportAnalysisResult(BaseModel):
     )
 
 
+class SuggestedTaskResult(BaseModel):
+    """
+    Structured schema for AI operational task suggestion.
+    """
+    task_description: str = Field(
+        description="A concise, highly specific, actionable operational task for emergency responders or volunteers to execute immediately, under 100 characters."
+    )
+
+
 def _get_fallback_result(raw_text: str, reason: str) -> dict:
     """
     Deterministic fallback when LLM call fails or returns invalid output.
@@ -216,15 +225,16 @@ Given this verified crisis incident:
 - Urgency: {urgency}
 - People Affected: {affected if affected is not None else 'Unknown'}
 
-Suggest ONE single, highly specific, actionable operational task for emergency responders or volunteers to execute immediately (under 80 characters, no quotes or prefix).
-Examples:
+Suggest ONE single, highly specific, actionable operational task for emergency responders or volunteers to execute immediately.
+Examples of good operational tasks:
 - "Deploy 2 inflatable rescue boats to Elm St for evacuation"
 - "Set up emergency water distribution point at Central High School"
 - "Cordon off downed high-voltage lines at 5th and Main"
+- "Dispatch medical triage unit to Market Square"
 """
     model_name = os.environ.get('GEMINI_MODEL', 'gemini-3.6-flash')
     model_candidates = [model_name]
-    for fb in ['gemini-3.7-flash', 'gemini-3.5-flash', 'gemini-flash-latest']:
+    for fb in ['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3.7-flash']:
         if fb not in model_candidates:
             model_candidates.append(fb)
 
@@ -235,12 +245,15 @@ Examples:
                 model=current_model,
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    temperature=0.2,
-                    max_output_tokens=50,
+                    response_mime_type="application/json",
+                    response_json_schema=SuggestedTaskResult.model_json_schema(),
+                    temperature=0.1,
                 )
             )
             if response.text:
-                task_text = response.text.strip().strip('"').strip("'")
+                parsed_json = json.loads(response.text)
+                validated = SuggestedTaskResult.model_validate(parsed_json)
+                task_text = validated.task_description.strip().strip('"').strip("'")
                 if task_text:
                     return task_text
         except Exception as e:
@@ -248,4 +261,5 @@ Examples:
             continue
 
     return fallback_task
+
 

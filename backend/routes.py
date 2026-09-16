@@ -286,6 +286,35 @@ def generate_task_for_incident(id):
     return jsonify(task.to_dict()), 201
 
 
+@api_bp.route('/incidents/<int:id>/tasks', methods=['POST'])
+def create_task_for_incident(id):
+    """
+    Human responder action: Add a custom operational task to an incident.
+    """
+    incident = db.session.get(Incident, id)
+    if not incident:
+        return jsonify({'error': f'Incident {id} not found'}), 404
+
+    data = request.get_json(silent=True) or {}
+    description = (data.get('description') or '').strip()
+    if not description:
+        return jsonify({'error': 'Task description is required and cannot be empty'}), 400
+
+    claimed_by = data.get('claimed_by')
+
+    task = Task(
+        incident_id=id,
+        description=description,
+        status='open',
+        claimed_by=claimed_by
+    )
+    db.session.add(task)
+    db.session.commit()
+
+    return jsonify(task.to_dict()), 201
+
+
+
 @api_bp.route('/tasks/<int:id>/claim', methods=['POST'])
 def claim_task(id):
     """

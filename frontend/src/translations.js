@@ -90,10 +90,13 @@ export const TRANSLATIONS = {
     btn_generating: "Generating...",
     btn_inspect: "Inspect Reports",
     tasks_heading: "Operational Tasks",
-    no_tasks: "No tasks generated yet. Click 'Generate Suggested Task' to dispatch response.",
+    no_tasks: "No tasks created yet. Generate an AI suggestion or add a custom task below.",
     btn_claim_task: "Claim Task",
     btn_claiming: "Claiming...",
     claimed_by_label: "Claimed by:",
+    custom_task_placeholder: "Enter custom operational task...",
+    btn_add_task: "+ Add Task",
+    btn_adding_task: "Adding...",
 
     // Status & Urgency
     urgency_critical: "Critical",
@@ -192,10 +195,13 @@ export const TRANSLATIONS = {
     btn_generating: "AI Dey Think Work...",
     btn_inspect: "Check All Reports",
     tasks_heading: "Work Wey Dey Ground",
-    no_tasks: "No task yet. Click 'Suggest Wetyn To Do' make AI assign work.",
+    no_tasks: "No task yet. Click 'Suggest Wetyn To Do' or add your own work below.",
     btn_claim_task: "Take This Work",
     btn_claiming: "Dey Claim Am...",
     claimed_by_label: "Person Wey Take Am:",
+    custom_task_placeholder: "Write your own work (e.g. Send boat go Elm St)...",
+    btn_add_task: "+ Add Work",
+    btn_adding_task: "Dey Add Am...",
 
     // Status & Urgency
     urgency_critical: "Danger / Critical",

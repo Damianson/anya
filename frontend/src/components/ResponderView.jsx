@@ -4,6 +4,7 @@ import { API_BASE } from '../config';
 export default function ResponderView({ incidents, onRefresh, onSelectIncident, t = (k) => k }) {
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [actionError, setActionError] = useState(null);
+  const [customTaskInputs, setCustomTaskInputs] = useState({});
 
   // Priority sorting: Disputed and Unverified first, then corroborated, verified, resolved
   const priorityOrder = {
@@ -85,7 +86,44 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident, 
     }
   }
 
+  function handleCustomTaskInputChange(id, value) {
+    setCustomTaskInputs((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  }
+
+  async function handleCreateCustomTask(e, id) {
+    e.preventDefault();
+    const taskText = (customTaskInputs[id] || '').trim();
+    if (!taskText) return;
+
+    setActionLoadingId(`custom-task-${id}`);
+    setActionError(null);
+    try {
+      const res = await fetch(`${API_BASE}/incidents/${id}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: taskText }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to create custom task');
+      }
+      setCustomTaskInputs((prev) => ({
+        ...prev,
+        [id]: '',
+      }));
+      onRefresh();
+    } catch (err) {
+      setActionError(err.message);
+    } finally {
+      setActionLoadingId(null);
+    }
+  }
+
   return (
+
     <section className="responder-workspace">
       <div className="responder-header">
         <div>
@@ -257,9 +295,37 @@ export default function ResponderView({ incidents, onRefresh, onSelectIncident, 
                       ))}
                     </div>
                   )}
+
+                  {/* Custom Task Entry Form */}
+                  <form
+                    onSubmit={(e) => handleCreateCustomTask(e, incident.id)}
+                    className="custom-task-form"
+                  >
+                    <input
+                      type="text"
+                      className="custom-task-input"
+                      placeholder={t('custom_task_placeholder')}
+                      value={customTaskInputs[incident.id] || ''}
+                      onChange={(e) => handleCustomTaskInputChange(incident.id, e.target.value)}
+                      disabled={actionLoadingId === `custom-task-${incident.id}`}
+                    />
+                    <button
+                      type="submit"
+                      className="btn-action btn-add-custom-task"
+                      disabled={
+                        !customTaskInputs[incident.id]?.trim() ||
+                        actionLoadingId === `custom-task-${incident.id}`
+                      }
+                    >
+                      {actionLoadingId === `custom-task-${incident.id}`
+                        ? t('btn_adding_task')
+                        : t('btn_add_task')}
+                    </button>
+                  </form>
                 </div>
               </div>
             );
+
           })}
         </div>
       )}
