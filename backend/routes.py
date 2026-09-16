@@ -164,8 +164,21 @@ def list_incidents():
     """
     List all incidents, ordered from newest to oldest, including their tasks, report count,
     and latest AI triage rationale and confidence score.
+    Includes automated self-healing schema creation if called against a newly provisioned database.
     """
-    incidents = Incident.query.order_by(Incident.created_at.desc()).all()
+    try:
+        incidents = Incident.query.order_by(Incident.created_at.desc()).all()
+    except Exception as e:
+        try:
+            db.create_all()
+            from seed_db import populate_seed_data
+            populate_seed_data(reset=False)
+            incidents = Incident.query.order_by(Incident.created_at.desc()).all()
+        except Exception as recovery_err:
+            return jsonify({
+                'error': f'Database query failed: {str(e)}',
+                'recovery_error': str(recovery_err)
+            }), 500
     results = []
     for inc in incidents:
         data = inc.to_dict()

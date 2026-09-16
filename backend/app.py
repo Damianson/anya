@@ -57,6 +57,18 @@ def create_app(test_config=None):
     CORS(app)
     db.init_app(app)
 
+    # Initialize database tables and auto-seed if empty on first boot
+    with app.app_context():
+        try:
+            db.create_all()
+            from models import Incident
+            if Incident.query.first() is None:
+                from seed_db import populate_seed_data
+                populate_seed_data(reset=False)
+                app.logger.info("Database auto-seeded with benchmark crisis scenarios.")
+        except Exception as e:
+            app.logger.warning(f"Database startup auto-init notice: {e}")
+
     # Register API routes Blueprint
     app.register_blueprint(api_bp)
 
