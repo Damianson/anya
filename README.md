@@ -115,7 +115,7 @@ cp .env.example .env
 Configure your `backend/.env` file:
 ```env
 SECRET_KEY=dev-secret-key-change-in-production
-DATABASE_URL=sqlite:///instance/anya.db
+DATABASE_URL=your-db-url
 PORT=5000
 GEMINI_API_KEY=your_actual_gemini_api_key_here
 GEMINI_MODEL=gemini-3.6-flash
