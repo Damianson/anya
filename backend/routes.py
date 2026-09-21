@@ -1,3 +1,5 @@
+import os
+import hmac
 from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
 from models import db, Incident, Report, Task
@@ -454,5 +456,48 @@ def sms_webhook():
     }
 
     return jsonify(response_payload), 201
+
+
+@api_bp.route('/admin/reset-db', methods=['POST'])
+def reset_database_endpoint():
+    """
+    Demo administration endpoint:
+    Resets the database schema and reseeds with the benchmark crisis scenarios.
+    Protected by secret ADMIN_RESET_TOKEN environment variable.
+    """
+    configured_token = os.environ.get('ADMIN_RESET_TOKEN', '').strip()
+    if not configured_token:
+        return jsonify({
+            'error': 'ADMIN_RESET_TOKEN is not configured on the server. Set this environment variable in your deployment dashboard.'
+        }), 401
+
+    # Check header (X-Admin-Token or Authorization: Bearer <token>) or query param (?token=...)
+    provided_token = request.headers.get('X-Admin-Token')
+    if not provided_token:
+        auth_header = request.headers.get('Authorization', '')
+        if auth_header.startswith('Bearer '):
+            provided_token = auth_header[7:].strip()
+        elif auth_header:
+            provided_token = auth_header.strip()
+
+    if not provided_token:
+        provided_token = request.args.get('token')
+
+    if not provided_token or not hmac.compare_digest(provided_token.strip(), configured_token):
+        return jsonify({'error': 'Unauthorized: invalid or missing admin token'}), 401
+
+    try:
+        from seed_db import populate_seed_data
+        populate_seed_data(reset=True)
+        return jsonify({
+            'status': 'ok',
+            'message': 'Database successfully reset and reseeded with benchmark crisis scenarios.'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': f'Failed to reset and reseed database: {str(e)}'
+        }), 500
+
 
 
