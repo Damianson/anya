@@ -11,6 +11,8 @@
 [![Gemini 3.6 Flash](https://img.shields.io/badge/AI-Gemini%203.6%20Flash-4285F4?style=flat&logo=google&logoColor=white)](https://ai.google.dev/)
 [![Leaflet](https://img.shields.io/badge/Maps-Leaflet.js-199900?style=flat&logo=leaflet&logoColor=white)](https://leafletjs.com/)
 
+**Live Demo:** [Anya Crisis Coordination Platform](https://anya-vtfv.onrender.com/)
+
 > *"Anyá"* is the Igbo word for **"Eye"** — reflecting the platform's core mission to act as a vigilant, clear-sighted observer and trusted coordinator during chaotic community crises.
 
 ---
